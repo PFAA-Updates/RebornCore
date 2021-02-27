@@ -2,7 +2,6 @@ package reborncore.common.multiblock;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
@@ -15,7 +14,7 @@ import java.util.Set;
  * This class contains the base logic for "multiblock controllers".
  * Conceptually, they are meta-TileEntities. They govern the logic for an
  * associated group of TileEntities.
- * <p>
+ * <p/>
  * Subordinate TileEntities implement the IMultiblockPart class and, generally,
  * should not have an update() loop.
  */
@@ -147,7 +146,8 @@ public abstract class MultiblockControllerBase {
             referenceCoord = coord;
             part.becomeMultiblockSaveDelegate();
         } else if (coord.compareTo(referenceCoord) < 0) {
-            TileEntity te = this.worldObj.getTileEntity(referenceCoord.toBlockPos());
+            TileEntity te = this.worldObj.getTileEntity(referenceCoord.x,
+                    referenceCoord.y, referenceCoord.z);
             ((IMultiblockPart) te).forfeitMultiblockSaveDelegate();
 
             referenceCoord = coord;
@@ -157,26 +157,26 @@ public abstract class MultiblockControllerBase {
         }
 
         if (minimumCoord != null) {
-            if (part.getPos().getX() < minimumCoord.x) {
-                minimumCoord.x = part.getPos().getX();
+            if (part.xCoord < minimumCoord.x) {
+                minimumCoord.x = part.xCoord;
             }
-            if (part.getPos().getY() < minimumCoord.y) {
-                minimumCoord.y = part.getPos().getY();
+            if (part.yCoord < minimumCoord.y) {
+                minimumCoord.y = part.yCoord;
             }
-            if (part.getPos().getZ() < minimumCoord.z) {
-                minimumCoord.z = part.getPos().getZ();
+            if (part.zCoord < minimumCoord.z) {
+                minimumCoord.z = part.zCoord;
             }
         }
 
         if (maximumCoord != null) {
-            if (part.getPos().getX() > maximumCoord.x) {
-                maximumCoord.x = part.getPos().getX();
+            if (part.xCoord > maximumCoord.x) {
+                maximumCoord.x = part.xCoord;
             }
-            if (part.getPos().getY() > maximumCoord.y) {
-                maximumCoord.y = part.getPos().getY();
+            if (part.yCoord > maximumCoord.y) {
+                maximumCoord.y = part.yCoord;
             }
-            if (part.getPos().getZ() > maximumCoord.z) {
-                maximumCoord.z = part.getPos().getZ();
+            if (part.zCoord > maximumCoord.z) {
+                maximumCoord.z = part.zCoord;
             }
         }
 
@@ -237,7 +237,7 @@ public abstract class MultiblockControllerBase {
         minimumCoord = maximumCoord = null;
 
         if (referenceCoord != null
-                && referenceCoord.equals(part.getPos())) {
+                && referenceCoord.equals(part.xCoord, part.yCoord, part.zCoord)) {
             referenceCoord = null;
         }
 
@@ -265,8 +265,8 @@ public abstract class MultiblockControllerBase {
                     .warning(
                             "[%s] Double-removing part (%d) @ %d, %d, %d, this is unexpected and may cause problems. If you encounter anomalies, please tear down the reactor and rebuild it.",
                             worldObj.isRemote ? "CLIENT" : "SERVER",
-                            part.hashCode(), part.getPos().getX(), part.getPos().getY(),
-                            part.getPos().getZ());
+                            part.hashCode(), part.xCoord, part.yCoord,
+                            part.zCoord);
         }
 
         if (connectedParts.isEmpty()) {
@@ -473,7 +473,8 @@ public abstract class MultiblockControllerBase {
         if (referenceCoord != null) {
             if (worldObj.getChunkProvider().chunkExists(
                     referenceCoord.getChunkX(), referenceCoord.getChunkZ())) {
-                TileEntity te = this.worldObj.getTileEntity(referenceCoord.toBlockPos());
+                TileEntity te = this.worldObj.getTileEntity(referenceCoord.x,
+                        referenceCoord.y, referenceCoord.z);
                 if (te instanceof IMultiblockPart) {
                     ((IMultiblockPart) te).forfeitMultiblockSaveDelegate();
                 }
@@ -504,6 +505,9 @@ public abstract class MultiblockControllerBase {
     /**
      * Driver for the update loop. If the machine is assembled, runs the game
      * logic update method.
+     *
+     * @see MultiblockControllerBase#update()
+     * //TODO Fix this Javadoc
      */
     public final void updateMultiblockEntity() {
         if (connectedParts.isEmpty()) {
@@ -525,9 +529,9 @@ public abstract class MultiblockControllerBase {
             // chunks as dirty.
             if (minimumCoord != null
                     && maximumCoord != null
-                    && this.worldObj.isAreaLoaded(new BlockPos(minimumCoord.x,
-                    minimumCoord.y, minimumCoord.z), new BlockPos(maximumCoord.x,
-                    maximumCoord.y, maximumCoord.z))) {
+                    && this.worldObj.checkChunksExist(minimumCoord.x,
+                    minimumCoord.y, minimumCoord.z, maximumCoord.x,
+                    maximumCoord.y, maximumCoord.z)) {
                 int minChunkX = minimumCoord.x >> 4;
                 int minChunkZ = minimumCoord.z >> 4;
                 int maxChunkX = maximumCoord.x >> 4;
@@ -691,23 +695,23 @@ public abstract class MultiblockControllerBase {
                 Integer.MIN_VALUE);
 
         for (IMultiblockPart part : connectedParts) {
-            if (part.getPos().getX() < minimumCoord.x) {
-                minimumCoord.x = part.getPos().getX();
+            if (part.xCoord < minimumCoord.x) {
+                minimumCoord.x = part.xCoord;
             }
-            if (part.getPos().getX() > maximumCoord.x) {
-                maximumCoord.x = part.getPos().getX();
+            if (part.xCoord > maximumCoord.x) {
+                maximumCoord.x = part.xCoord;
             }
-            if (part.getPos().getY() < minimumCoord.y) {
-                minimumCoord.y = part.getPos().getY();
+            if (part.yCoord < minimumCoord.y) {
+                minimumCoord.y = part.yCoord;
             }
-            if (part.getPos().getY() > maximumCoord.y) {
-                maximumCoord.y = part.getPos().getY();
+            if (part.yCoord > maximumCoord.y) {
+                maximumCoord.y = part.yCoord;
             }
-            if (part.getPos().getY() < minimumCoord.z) {
-                minimumCoord.z = part.getPos().getY();
+            if (part.zCoord < minimumCoord.z) {
+                minimumCoord.z = part.zCoord;
             }
-            if (part.getPos().getY() > maximumCoord.z) {
-                maximumCoord.z = part.getPos().getY();
+            if (part.zCoord > maximumCoord.z) {
+                maximumCoord.z = part.zCoord;
             }
         }
     }
@@ -835,7 +839,7 @@ public abstract class MultiblockControllerBase {
                 sb.append(", ");
             }
             sb.append(String.format("(%d: %d, %d, %d)", part.hashCode(),
-                    part.getPos().getX(), part.getPos().getY(), part.getPos().getZ()));
+                    part.xCoord, part.yCoord, part.zCoord));
             first = false;
         }
 
@@ -850,7 +854,8 @@ public abstract class MultiblockControllerBase {
         HashSet<IMultiblockPart> deadParts = new HashSet<IMultiblockPart>();
         for (IMultiblockPart part : connectedParts) {
             if (part.isInvalid()
-                    || worldObj.getTileEntity(part.getPos()) != part) {
+                    || worldObj.getTileEntity(part.xCoord, part.yCoord,
+                    part.zCoord) != part) {
                 onDetachBlock(part);
                 deadParts.add(part);
             }
@@ -895,14 +900,14 @@ public abstract class MultiblockControllerBase {
 
         for (IMultiblockPart part : connectedParts) {
             // This happens during chunk unload.
-            if (!chunkProvider.chunkExists(part.getPos().getX() >> 4, part.getPos().getZ() >> 4)
+            if (!chunkProvider.chunkExists(part.xCoord >> 4, part.zCoord >> 4)
                     || part.isInvalid()) {
                 deadParts.add(part);
                 onDetachBlock(part);
                 continue;
             }
 
-            if (worldObj.getTileEntity(part.getPos()) != part) {
+            if (worldObj.getTileEntity(part.xCoord, part.yCoord, part.zCoord) != part) {
                 deadParts.add(part);
                 onDetachBlock(part);
                 continue;
@@ -1004,7 +1009,7 @@ public abstract class MultiblockControllerBase {
 
         IChunkProvider chunkProvider = worldObj.getChunkProvider();
         for (IMultiblockPart part : connectedParts) {
-            if (chunkProvider.chunkExists(part.getPos().getX() >> 4, part.getPos().getZ() >> 4)) {
+            if (chunkProvider.chunkExists(part.xCoord >> 4, part.zCoord >> 4)) {
                 onDetachBlock(part);
             }
         }
@@ -1029,16 +1034,16 @@ public abstract class MultiblockControllerBase {
 
         for (IMultiblockPart part : connectedParts) {
             if (part.isInvalid()
-                    || !chunkProvider.chunkExists(part.getPos().getX() >> 4,
-                    part.getPos().getZ() >> 4)) {
+                    || !chunkProvider.chunkExists(part.xCoord >> 4,
+                    part.zCoord >> 4)) {
                 // Chunk is unloading, skip this coord to prevent chunk
                 // thrashing
                 continue;
             }
 
             if (referenceCoord == null
-                    || referenceCoord.compareTo(part.getPos().getX(), part.getPos().getY(),
-                    part.getPos().getZ()) > 0) {
+                    || referenceCoord.compareTo(part.xCoord, part.yCoord,
+                    part.zCoord) > 0) {
                 referenceCoord = part.getWorldLocation();
                 theChosenOne = part;
             }
@@ -1051,28 +1056,28 @@ public abstract class MultiblockControllerBase {
 
     /**
      * Marks the reference coord dirty & updateable.
-     * <p>
+     * <p/>
      * On the server, this will mark the for a data-update, so that nearby
      * clients will receive an updated description packet from the server after
      * a short time. The block's chunk will also be marked dirty and the block's
      * chunk will be saved to disk the next time chunks are saved.
-     * <p>
+     * <p/>
      * On the client, this will mark the block for a rendering update.
      */
     protected void markReferenceCoordForUpdate() {
         CoordTriplet rc = getReferenceCoord();
         if (worldObj != null && rc != null) {
-            worldObj.markBlockForUpdate(rc.toBlockPos());
+            worldObj.markBlockForUpdate(rc.x, rc.y, rc.z);
         }
     }
 
     /**
      * Marks the reference coord dirty.
-     * <p>
+     * <p/>
      * On the server, this marks the reference coord's chunk as dirty; the block
      * (and chunk) will be saved to disk the next time chunks are saved. This
      * does NOT mark it dirty for a description-packet update.
-     * <p>
+     * <p/>
      * On the client, does nothing.
      *
      * @see MultiblockControllerBase#markReferenceCoordForUpdate()
@@ -1087,8 +1092,10 @@ public abstract class MultiblockControllerBase {
             return;
         }
 
-        TileEntity saveTe = worldObj.getTileEntity(referenceCoord.toBlockPos());
-        worldObj.markChunkDirty(referenceCoord.toBlockPos(), saveTe);
+        TileEntity saveTe = worldObj.getTileEntity(referenceCoord.x,
+                referenceCoord.y, referenceCoord.z);
+        worldObj.markTileEntityChunkModified(referenceCoord.x,
+                referenceCoord.y, referenceCoord.z, saveTe);
     }
 
 }

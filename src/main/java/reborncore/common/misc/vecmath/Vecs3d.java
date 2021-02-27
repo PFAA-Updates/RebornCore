@@ -1,18 +1,17 @@
 package reborncore.common.misc.vecmath;
 
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.StringTokenizer;
 
@@ -35,7 +34,7 @@ public class Vecs3d {
 
     public Vecs3d(TileEntity te) {
 
-        this(te.getPos().getX(), te.getPos().getY(), te.getPos().getZ(), te.getWorld());
+        this(te.xCoord, te.yCoord, te.zCoord, te.getWorldObj());
     }
 
     public Vecs3d(Vec3 vec) {
@@ -62,9 +61,9 @@ public class Vecs3d {
         return this;
     }
 
-    public Vecs3d add(EnumFacing dir) {
+    public Vecs3d add(ForgeDirection dir) {
 
-        return add(dir.getFrontOffsetX(), dir.getFrontOffsetY(), dir.getFrontOffsetZ());
+        return add(dir.offsetX, dir.offsetY, dir.offsetZ);
     }
 
     public Vecs3d add(Vecs3d vec) {
@@ -80,9 +79,9 @@ public class Vecs3d {
         return this;
     }
 
-    public Vecs3d sub(EnumFacing dir) {
+    public Vecs3d sub(ForgeDirection dir) {
 
-        return sub(dir.getFrontOffsetX(), dir.getFrontOffsetY(), dir.getFrontOffsetZ());
+        return sub(dir.offsetX, dir.offsetY, dir.offsetZ);
     }
 
     public Vecs3d sub(Vecs3d vec) {
@@ -103,9 +102,9 @@ public class Vecs3d {
         return mul(multiplier, multiplier, multiplier);
     }
 
-    public Vecs3d mul(EnumFacing direction) {
+    public Vecs3d mul(ForgeDirection direction) {
 
-        return mul(direction.getFrontOffsetX(), direction.getFrontOffsetY(), direction.getFrontOffsetZ());
+        return mul(direction.offsetX, direction.offsetY, direction.offsetZ);
     }
 
     public Vecs3d multiply(Vecs3d v) {
@@ -126,9 +125,9 @@ public class Vecs3d {
         return div(multiplier, multiplier, multiplier);
     }
 
-    public Vecs3d div(EnumFacing direction) {
+    public Vecs3d div(ForgeDirection direction) {
 
-        return div(direction.getFrontOffsetX(), direction.getFrontOffsetY(), direction.getFrontOffsetZ());
+        return div(direction.offsetX, direction.offsetY, direction.offsetZ);
     }
 
     public double length() {
@@ -173,17 +172,17 @@ public class Vecs3d {
         return clone().add(x, y, z);
     }
 
-    public Vecs3d getRelative(EnumFacing dir) {
+    public Vecs3d getRelative(ForgeDirection dir) {
 
-        return getRelative(dir.getFrontOffsetX(), dir.getFrontOffsetY(), dir.getFrontOffsetZ());
+        return getRelative(dir.offsetX, dir.offsetY, dir.offsetZ);
     }
 
-    public EnumFacing getDirectionTo(Vecs3d vec) {
+    public ForgeDirection getDirectionTo(Vecs3d vec) {
 
-        for (EnumFacing d : EnumFacing.VALUES)
-            if (getBlockX() + d.getFrontOffsetX() == vec.getBlockX()
-                    && getBlockY() + d.getFrontOffsetY() == vec.getBlockY()
-                    && getBlockZ() + d.getFrontOffsetZ() == vec.getBlockZ())
+        for (ForgeDirection d : ForgeDirection.VALID_DIRECTIONS)
+            if (getBlockX() + d.offsetX == vec.getBlockX()
+                    && getBlockY() + d.offsetY == vec.getBlockY()
+                    && getBlockZ() + d.offsetZ == vec.getBlockZ())
                 return d;
         return null;
     }
@@ -202,19 +201,15 @@ public class Vecs3d {
     public boolean hasTileEntity() {
 
         if (hasWorld()) {
-            return w.getTileEntity(getBlockPos()) != null;
+            return w.getTileEntity((int) x, (int) y, (int) z) != null;
         }
         return false;
-    }
-
-    public BlockPos getBlockPos() {
-        return new BlockPos(x, y, z);
     }
 
     public TileEntity getTileEntity() {
 
         if (hasTileEntity()) {
-            return w.getTileEntity(getBlockPos());
+            return w.getTileEntity((int) x, (int) y, (int) z);
         }
         return null;
     }
@@ -227,18 +222,26 @@ public class Vecs3d {
     public boolean isBlock(Block b, boolean checkAir) {
 
         if (hasWorld()) {
-            Block bl = w.getBlockState(getBlockPos()).getBlock();
+            Block bl = w.getBlock((int) x, (int) y, (int) z);
 
             if (b == null && bl == Blocks.air)
                 return true;
             if (b == null && checkAir && bl.getMaterial() == Material.air)
                 return true;
-            if (b == null && checkAir && bl.isAir(w, getBlockPos()))
+            if (b == null && checkAir && bl.isAir(w, (int) x, (int) y, (int) z))
                 return true;
 
             return bl.getClass().isInstance(b);
         }
         return false;
+    }
+
+    public int getBlockMeta() {
+
+        if (hasWorld()) {
+            return w.getBlockMetadata((int) x, (int) y, (int) z);
+        }
+        return -1;
     }
 
     public Block getBlock() {
@@ -251,7 +254,7 @@ public class Vecs3d {
         if (hasWorld()) {
             if (airIsNull && isBlock(null, true))
                 return null;
-            return w.getBlockState(getBlockPos()).getBlock();
+            return w.getBlock((int) x, (int) y, (int) z);
 
         }
         return null;
@@ -346,7 +349,7 @@ public class Vecs3d {
 
     public Vec3 toVec3() {
 
-        return new Vec3(x, y, z);
+        return Vec3.createVectorHelper(x, y, z);
     }
 
     @Override
@@ -354,29 +357,29 @@ public class Vecs3d {
 
         String s = "Vector3{";
         if (hasWorld())
-            s += "w=" + w.provider.getDimensionId() + ";";
+            s += "w=" + w.provider.dimensionId + ";";
         s += "x=" + x + ";y=" + y + ";z=" + z + "}";
         return s;
     }
 
-    public EnumFacing toForgeDirection() {
+    public ForgeDirection toForgeDirection() {
 
         if (z == 1)
-            return EnumFacing.SOUTH;
+            return ForgeDirection.SOUTH;
         if (z == -1)
-            return EnumFacing.NORTH;
+            return ForgeDirection.NORTH;
 
         if (x == 1)
-            return EnumFacing.EAST;
+            return ForgeDirection.EAST;
         if (x == -1)
-            return EnumFacing.WEST;
+            return ForgeDirection.WEST;
 
         if (y == 1)
-            return EnumFacing.UP;
+            return ForgeDirection.UP;
         if (y == -1)
-            return EnumFacing.DOWN;
+            return ForgeDirection.DOWN;
 
-        return null;
+        return ForgeDirection.UNKNOWN;
     }
 
     public static Vecs3d fromString(String s) {
@@ -394,7 +397,7 @@ public class Vecs3d {
                     if (FMLCommonHandler.instance().getEffectiveSide()
                             .isServer()) {
                         for (World wo : MinecraftServer.getServer().worldServers) {
-                            if (wo.provider.getDimensionId() == world) {
+                            if (wo.provider.dimensionId == world) {
                                 w = wo;
                                 break;
                             }
@@ -424,7 +427,7 @@ public class Vecs3d {
     @SideOnly(Side.CLIENT)
     private static World getClientWorld(int world) {
 
-        if (Minecraft.getMinecraft().theWorld.provider.getDimensionId() != world)
+        if (Minecraft.getMinecraft().theWorld.provider.dimensionId != world)
             return null;
         return Minecraft.getMinecraft().theWorld;
     }

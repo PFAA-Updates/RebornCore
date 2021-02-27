@@ -2,7 +2,7 @@
  * This class was created by <Vazkii>. It's distributed as
  * part of the Botania Mod. Get the Source Code in github:
  * https://github.com/Vazkii/Botania
- * <p>
+ * <p/>
  * Botania is Open Source and distributed under the
  * Botania License: http://botaniamod.net/license.php
  */
@@ -10,9 +10,8 @@ package reborncore.client.multiblock.component;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
-import reborncore.common.multiblock.CoordTriplet;
 
 /**
  * A component of a multiblock, the normal one
@@ -20,17 +19,17 @@ import reborncore.common.multiblock.CoordTriplet;
  */
 public class MultiblockComponent {
 
-    public CoordTriplet relPos;
+    public ChunkCoordinates relPos;
     public final Block block;
     public final int meta;
 
-    public MultiblockComponent(CoordTriplet relPos, Block block, int meta) {
+    public MultiblockComponent(ChunkCoordinates relPos, Block block, int meta) {
         this.relPos = relPos;
         this.block = block;
         this.meta = meta;
     }
 
-    public CoordTriplet getRelativePosition() {
+    public ChunkCoordinates getRelativePosition() {
         return relPos;
     }
 
@@ -43,7 +42,7 @@ public class MultiblockComponent {
     }
 
     public boolean matches(World world, int x, int y, int z) {
-        return world.getBlockState(new BlockPos(x, y, z)).getBlock() == getBlock();
+        return world.getBlock(x, y, z) == getBlock() && (meta == -1 || world.getBlockMetadata(x, y, z) == meta);
     }
 
     public ItemStack[] getMaterials() {
@@ -51,14 +50,14 @@ public class MultiblockComponent {
     }
 
     public void rotate(double angle) {
-        double x = relPos.x;
-        double z = relPos.z;
+        double x = relPos.posX;
+        double z = relPos.posZ;
         double sin = Math.sin(angle);
         double cos = Math.cos(angle);
 
         double xn = x * cos - z * sin;
         double zn = x * sin + z * cos;
-        relPos = new CoordTriplet((int) Math.round(xn), relPos.y, (int) Math.round(zn));
+        relPos = new ChunkCoordinates((int) Math.round(xn), relPos.posY, (int) Math.round(zn));
     }
 
     public MultiblockComponent copy() {

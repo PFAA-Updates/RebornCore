@@ -1,7 +1,6 @@
 package reborncore.common.multiblock.rectangular;
 
-
-import net.minecraft.util.EnumFacing;
+import net.minecraftforge.common.util.ForgeDirection;
 import reborncore.common.multiblock.CoordTriplet;
 import reborncore.common.multiblock.MultiblockControllerBase;
 import reborncore.common.multiblock.MultiblockTileEntityBase;
@@ -11,17 +10,17 @@ public abstract class RectangularMultiblockTileEntityBase extends
         MultiblockTileEntityBase {
 
     PartPosition position;
-    EnumFacing outwards;
+    ForgeDirection outwards;
 
     public RectangularMultiblockTileEntityBase() {
         super();
 
         position = PartPosition.Unknown;
-        outwards = null;
+        outwards = ForgeDirection.UNKNOWN;
     }
 
     // Positional Data
-    public EnumFacing getOutwardsDir() {
+    public ForgeDirection getOutwardsDir() {
         return outwards;
     }
 
@@ -49,23 +48,23 @@ public abstract class RectangularMultiblockTileEntityBase extends
     @Override
     public void onMachineBroken() {
         position = PartPosition.Unknown;
-        outwards = null;
+        outwards = ForgeDirection.UNKNOWN;
     }
 
     // Positional helpers
     public void recalculateOutwardsDirection(CoordTriplet minCoord,
                                              CoordTriplet maxCoord) {
-        outwards = null;
+        outwards = ForgeDirection.UNKNOWN;
         position = PartPosition.Unknown;
 
         int facesMatching = 0;
-        if (maxCoord.x == this.getPos().getX() || minCoord.x == this.getPos().getX()) {
+        if (maxCoord.x == this.xCoord || minCoord.x == this.xCoord) {
             facesMatching++;
         }
-        if (maxCoord.y == this.getPos().getY() || minCoord.y == this.getPos().getY()) {
+        if (maxCoord.y == this.yCoord || minCoord.y == this.yCoord) {
             facesMatching++;
         }
-        if (maxCoord.z == this.getPos().getZ() || minCoord.z == this.getPos().getZ()) {
+        if (maxCoord.z == this.zCoord || minCoord.z == this.zCoord) {
             facesMatching++;
         }
 
@@ -77,24 +76,24 @@ public abstract class RectangularMultiblockTileEntityBase extends
             position = PartPosition.Frame;
         } else {
             // 1 face matches
-            if (maxCoord.x == this.getPos().getX()) {
+            if (maxCoord.x == this.xCoord) {
                 position = PartPosition.EastFace;
-                outwards = EnumFacing.EAST;
-            } else if (minCoord.x == this.getPos().getX()) {
+                outwards = ForgeDirection.EAST;
+            } else if (minCoord.x == this.xCoord) {
                 position = PartPosition.WestFace;
-                outwards = EnumFacing.WEST;
-            } else if (maxCoord.z == this.getPos().getZ()) {
+                outwards = ForgeDirection.WEST;
+            } else if (maxCoord.z == this.zCoord) {
                 position = PartPosition.SouthFace;
-                outwards = EnumFacing.SOUTH;
-            } else if (minCoord.z == this.getPos().getZ()) {
+                outwards = ForgeDirection.SOUTH;
+            } else if (minCoord.z == this.zCoord) {
                 position = PartPosition.NorthFace;
-                outwards = EnumFacing.NORTH;
-            } else if (maxCoord.y == this.getPos().getY()) {
+                outwards = ForgeDirection.NORTH;
+            } else if (maxCoord.y == this.yCoord) {
                 position = PartPosition.TopFace;
-                outwards = EnumFacing.UP;
+                outwards = ForgeDirection.UP;
             } else {
                 position = PartPosition.BottomFace;
-                outwards = EnumFacing.DOWN;
+                outwards = ForgeDirection.DOWN;
             }
         }
     }

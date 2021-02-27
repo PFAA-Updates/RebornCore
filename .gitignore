@@ -7,13 +7,10 @@
 /.settings
 ./classpath
 /dep
-/build
 
 RebornCore.iws
 RebornCore.ipr
-RebornCore.iml
 Thumbs.db
 changelog.txt
 *.log
 .idea/*
-RebornCore.iml

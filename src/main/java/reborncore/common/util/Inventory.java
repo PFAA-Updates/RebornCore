@@ -6,8 +6,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.util.Constants;
 
 public class Inventory implements IInventory {
@@ -15,14 +13,13 @@ public class Inventory implements IInventory {
     private final ItemStack[] contents;
     private final String name;
     private final int stackLimit;
-    private TileEntity tile;
+    private TileEntity tile = new TileEntity();
     public boolean hasChanged = false;
 
-    public Inventory(int size, String invName, int invStackLimit, TileEntity tileEntity) {
+    public Inventory(int size, String invName, int invStackLimit) {
         contents = new ItemStack[size];
         name = invName;
         stackLimit = invStackLimit;
-        this.tile = tileEntity;
     }
 
     @Override
@@ -68,6 +65,11 @@ public class Inventory implements IInventory {
     }
 
     @Override
+    public String getInventoryName() {
+        return name;
+    }
+
+    @Override
     public int getInventoryStackLimit() {
         return stackLimit;
     }
@@ -78,15 +80,12 @@ public class Inventory implements IInventory {
     }
 
     @Override
-    public void openInventory(EntityPlayer player) {
-
+    public void openInventory() {
     }
 
     @Override
-    public void closeInventory(EntityPlayer player) {
-
+    public void closeInventory() {
     }
-
 
     public void readFromNBT(NBTTagCompound data) {
         readFromNBT(data, "Items");
@@ -134,7 +133,7 @@ public class Inventory implements IInventory {
     }
 
     @Override
-    public ItemStack removeStackFromSlot(int slotId) {
+    public ItemStack getStackInSlotOnClosing(int slotId) {
         if (this.contents[slotId] == null) {
             return null;
         }
@@ -153,45 +152,13 @@ public class Inventory implements IInventory {
         return true;
     }
 
-    //TODO find out what this is
     @Override
-    public int getField(int id) {
-        return 0;
-    }
-
-    @Override
-    public void setField(int id, int value) {
-
-    }
-
-    @Override
-    public int getFieldCount() {
-        return 0;
-    }
-
-    @Override
-    public void clear() {
-
-    }
-
-
-    @Override
-    public void markDirty() {
-        tile.markDirty();
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public boolean hasCustomName() {
+    public boolean hasCustomInventoryName() {
         return false;
     }
 
     @Override
-    public IChatComponent getDisplayName() {
-        return new ChatComponentText(name);
+    public void markDirty() {
+        tile.markDirty();
     }
 }
