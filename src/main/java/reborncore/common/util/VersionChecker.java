@@ -14,6 +14,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
+@Deprecated
 public class VersionChecker {
 
     public static final String apiAddress = "http://modmuss50.me/api/v1/version.php";
