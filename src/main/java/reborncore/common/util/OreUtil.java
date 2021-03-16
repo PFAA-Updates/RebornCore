@@ -5,6 +5,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import reborncore.RebornCore;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class OreUtil {
 
@@ -22,8 +23,10 @@ public class OreUtil {
     }
 
     public static ItemStack getStackFromName(String name, int stackSize){
-        ItemStack stack = OreDictionary.getOres(name).get(0).copy();
-        stack.stackSize = 1;
+    	List<ItemStack> entryList = OreDictionary.getOres(name);
+    	if (entryList.size() == 0) return null;
+        ItemStack stack = entryList.get(0).copy();
+        stack.stackSize = stackSize;
         return stack;
     }
 
