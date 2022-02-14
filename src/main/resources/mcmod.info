@@ -1,10 +1,10 @@
 [
 {
-  "modid": "reborncore",
-  "name": "RebornCore",
+  "modid": "${modId}",
+  "name": "${modName}",
   "description": "RebornCore, A core set of classes.",
-  "version": "$version",
-  "mcversion": "$mcversion",
+  "version": "${modVersion}",
+  "mcversion": "${minecraftVersion}",
   "url": "https://github.com/TechReborn/RebornCore",
   "updateUrl": "",
   "authorList": [

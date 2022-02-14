@@ -12,7 +12,7 @@ import reborncore.common.util.OreUtil;
 public class RebornCore implements IModInfo {
     public static final String MOD_NAME = "RebornCore";
     public static final String MOD_ID = "reborncore";
-    public static final String MOD_VERSION = "@MODVERSION@";
+    public static final String MOD_VERSION = "GRADLETOKEN_VERSION";
 
     public static LogHelper logHelper;
 
