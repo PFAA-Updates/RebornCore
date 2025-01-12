@@ -4,6 +4,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+
 import reborncore.client.gui.SlotFake;
 
 public abstract class RebornContainer extends Container {
@@ -90,10 +91,8 @@ public abstract class RebornContainer extends Container {
             if (slot instanceof SlotFake) {
                 continue;
             }
-            if (!slot.isItemValid(stackToShift))
-                continue;
-            if (shiftItemStack(stackToShift, machineIndex, machineIndex + 1))
-                return true;
+            if (!slot.isItemValid(stackToShift)) continue;
+            if (shiftItemStack(stackToShift, machineIndex, machineIndex + 1)) return true;
         }
         return false;
     }

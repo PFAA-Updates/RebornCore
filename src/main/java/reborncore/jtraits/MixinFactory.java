@@ -17,8 +17,7 @@ public class MixinFactory {
         Class<?> closingTrait = null;
         do {
             ClosingTrait a = cl.getAnnotation(ClosingTrait.class);
-            if (a == null)
-                continue;
+            if (a == null) continue;
 
             try {
                 closingTrait = Class.forName(a.value());
@@ -31,15 +30,13 @@ public class MixinFactory {
         Class<T> c = clazz;
         for (Class<?> t : traits) {
             Mixin<T> mixin = (Mixin<T>) ClassLoadingHelper.instance.findMixin(c, t);
-            if (mixin == null)
-                mixin = new Mixin<T>(c, t);
+            if (mixin == null) mixin = new Mixin<T>(c, t);
             c = mixin.mixin();
         }
 
         if (closingTrait != null) {
             Mixin<T> mixin = (Mixin<T>) ClassLoadingHelper.instance.findMixin(c, closingTrait);
-            if (mixin == null)
-                mixin = new Mixin<T>(c, closingTrait);
+            if (mixin == null) mixin = new Mixin<T>(c, closingTrait);
             c = mixin.mixin();
         }
 

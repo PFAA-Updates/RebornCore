@@ -1,11 +1,11 @@
 package reborncore.common.util;
 
+import java.util.Random;
 
 import net.minecraft.item.ItemStack;
 
-import java.util.Random;
-
 public class OreDrop {
+
     public OreDrop(ItemStack drop, Double modifyer) {
         this.drop = drop;
         this.count = drop.stackSize;
@@ -22,10 +22,11 @@ public class OreDrop {
 
     public ItemStack getDrops(int fortuneLevel, Random random) {
         int count;
-        if (baseChance == 100) //This always drops. Use vanilla fortune rules.
+        if (baseChance == 100) // This always drops. Use vanilla fortune rules.
         {
             count = calculateFortuneMulti(fortuneLevel, random);
-        } else if (calculateFortuneSingle(fortuneLevel, random))  //This has a chance to drop. Increase that chance with fortune.
+        } else if (calculateFortuneSingle(fortuneLevel, random)) // This has a chance to drop. Increase that chance with
+                                                                 // fortune.
         {
             count = this.count;
         } else {
@@ -34,12 +35,12 @@ public class OreDrop {
         return new ItemStack(drop.getItem(), count, drop.getItemDamage());
     }
 
-    //Refer to http://minecraft.gamepedia.com/Enchanting#Fortune
+    // Refer to http://minecraft.gamepedia.com/Enchanting#Fortune
     private int calculateFortuneMulti(int level, Random random) {
         int chanceOfEachBonus = 100 / (level + 2);
         int roll = random.nextInt(100);
 
-        if (roll < chanceOfEachBonus * level) //If level = 0, this is always false
+        if (roll < chanceOfEachBonus * level) // If level = 0, this is always false
         {
             return count * ((roll / chanceOfEachBonus) + 2);
         } else {
@@ -47,8 +48,8 @@ public class OreDrop {
         }
     }
 
-    //Each fortune level increases probability by 50% (configurable) of base, up to a limit of 100%, obviously.
-    //So, if base is 5% and we have Fortune III, chance is 5% + (3 * 2.5%) = 12.5%
+    // Each fortune level increases probability by 50% (configurable) of base, up to a limit of 100%, obviously.
+    // So, if base is 5% and we have Fortune III, chance is 5% + (3 * 2.5%) = 12.5%
     private boolean calculateFortuneSingle(int level, Random random) {
         double modifier = modifyer * level;
         double total = baseChance + (baseChance * modifier);

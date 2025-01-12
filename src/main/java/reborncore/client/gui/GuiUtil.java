@@ -3,10 +3,10 @@ package reborncore.client.gui;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
+
 import org.lwjgl.opengl.GL11;
 
 public class GuiUtil {
-
 
     public static void drawRepeated(IIcon icon, double x, double y, double width, double height, double z) {
         double iconWidthStep = (icon.getMaxU() - icon.getMinU()) / 16.0D;
@@ -36,7 +36,7 @@ public class GuiUtil {
         int bg = 0xf0100010;
         drawGradientRect(x + 1, y, w - 1, 1, bg, bg);
         drawGradientRect(x + 1, y + h, w - 1, 1, bg, bg);
-        drawGradientRect(x + 1, y + 1, w - 1, h - 1, bg, bg);//center
+        drawGradientRect(x + 1, y + 1, w - 1, h - 1, bg, bg);// center
         drawGradientRect(x, y + 1, 1, h - 1, bg, bg);
         drawGradientRect(x + w, y + 1, 1, h - 1, bg, bg);
         int grad1 = 0x505000ff;
@@ -53,6 +53,7 @@ public class GuiUtil {
     }
 
     public static class GuiHook extends Gui {
+
         @Override
         public void drawGradientRect(int par1, int par2, int par3, int par4, int par5, int par6) {
             super.drawGradientRect(par1, par2, par3, par4, par5, par6);
@@ -60,17 +61,19 @@ public class GuiUtil {
     }
 
     public static void drawColouredBox(int colour, int alpha, double posX, double posY, double width, double height) {
-       drawColouredBox(colour, alpha, posX, posY, width, height, 0);
+        drawColouredBox(colour, alpha, posX, posY, width, height, 0);
     }
 
-    public static void drawColouredBox(int colour, int alpha, double posX, double posY, double width, double height, double zLevel) {
+    public static void drawColouredBox(int colour, int alpha, double posX, double posY, double width, double height,
+        double zLevel) {
         int r = (colour >> 16 & 0xff);
         int g = (colour >> 8 & 0xff);
         int b = (colour & 0xff);
         drawColouredBox(r, g, b, alpha, posX, posY, width, height, zLevel);
     }
 
-    public static void drawColouredBox(int r, int g, int b, int alpha, double posX, double posY, double width, double height, double zLevel) {
+    public static void drawColouredBox(int r, int g, int b, int alpha, double posX, double posY, double width,
+        double height, double zLevel) {
         if (width <= 0 || height <= 0) {
             return;
         }

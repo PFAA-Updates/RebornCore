@@ -1,11 +1,5 @@
 package reborncore.common.util;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import org.apache.commons.io.IOUtils;
-import reborncore.common.IModInfo;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,6 +7,14 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+
+import org.apache.commons.io.IOUtils;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import reborncore.common.IModInfo;
 
 @Deprecated
 public class VersionChecker {
@@ -38,16 +40,17 @@ public class VersionChecker {
         InputStream in = con.getInputStream();
         String encoding = con.getContentEncoding();
         encoding = encoding == null ? "UTF-8" : encoding;
-        String body = IOUtils.toString(in, encoding).replaceAll("<br />", "");
+        String body = IOUtils.toString(in, encoding)
+            .replaceAll("<br />", "");
 
         Gson gson = new Gson();
-        versions = gson.fromJson(body, new TypeToken<ArrayList<ModifacationVersionInfo>>() {
-        }.getType());
+        versions = gson.fromJson(body, new TypeToken<ArrayList<ModifacationVersionInfo>>() {}.getType());
         isChecking = false;
     }
 
     public void checkVersionThreaded() {
         class VersionCheckerThread extends Thread {
+
             public void run() {
                 try {
                     checkVersion();
@@ -88,6 +91,7 @@ public class VersionChecker {
     }
 
     static class ModifacationVersionInfo {
+
         public String version;
 
         public String minecraftVersion;
@@ -98,7 +102,8 @@ public class VersionChecker {
 
         public boolean recommended;
 
-        public ModifacationVersionInfo(String version, String minecraftVersion, ArrayList<String> changeLog, String releaseDate, boolean recommended) {
+        public ModifacationVersionInfo(String version, String minecraftVersion, ArrayList<String> changeLog,
+            String releaseDate, boolean recommended) {
             this.version = version;
             this.minecraftVersion = minecraftVersion;
             this.changeLog = changeLog;
@@ -106,11 +111,10 @@ public class VersionChecker {
             this.recommended = recommended;
         }
 
-        public ModifacationVersionInfo() {
-        }
+        public ModifacationVersionInfo() {}
     }
 
-    //use this to make an example json file
+    // use this to make an example json file
     public static void main(String[] args) throws IOException {
         System.out.println("Generating example json file");
         ArrayList<ModifacationVersionInfo> infos = new ArrayList<ModifacationVersionInfo>();
@@ -118,11 +122,11 @@ public class VersionChecker {
         changelog.add("A change");
         changelog.add("Another change");
 
-
         infos.add(new ModifacationVersionInfo("1.1.1", "1.7.10", changelog, "12th July", true));
         infos.add(new ModifacationVersionInfo("1.2.0", "1.7.10", changelog, "28th July", true));
 
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new GsonBuilder().setPrettyPrinting()
+            .create();
         String json = gson.toJson(infos);
         try {
             FileWriter writer = new FileWriter(new File("master.json"));

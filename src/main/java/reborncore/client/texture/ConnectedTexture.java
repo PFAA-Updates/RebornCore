@@ -4,7 +4,6 @@ public class ConnectedTexture {
 
     private boolean up, down, left, right;
 
-
     public ConnectedTexture(boolean up, boolean down, boolean left, boolean right) {
         this.up = up;
         this.down = down;

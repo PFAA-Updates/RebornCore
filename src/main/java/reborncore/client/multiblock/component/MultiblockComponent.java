@@ -46,7 +46,7 @@ public class MultiblockComponent {
     }
 
     public ItemStack[] getMaterials() {
-        return new ItemStack[]{new ItemStack(block, 1, meta)};
+        return new ItemStack[] { new ItemStack(block, 1, meta) };
     }
 
     public void rotate(double angle) {

@@ -5,6 +5,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
+
 import reborncore.common.packets.PacketHandler;
 
 public class Tank extends FluidTank {
@@ -61,10 +62,11 @@ public class Tank extends FluidTank {
                 if (Math.abs(current.amount - lastBeforeUpdate.amount) >= 500) {
                     PacketHandler.sendPacketToAllPlayers(tile.getDescriptionPacket(), tile.getWorldObj());
                     lastBeforeUpdate = current.copy();
-                } else if (lastBeforeUpdate.amount < this.getCapacity() && current.amount == this.getCapacity() || lastBeforeUpdate.amount == this.getCapacity() && current.amount < this.getCapacity()) {
-                    PacketHandler.sendPacketToAllPlayers(tile.getDescriptionPacket(), tile.getWorldObj());
-                    lastBeforeUpdate = current.copy();
-                }
+                } else if (lastBeforeUpdate.amount < this.getCapacity() && current.amount == this.getCapacity()
+                    || lastBeforeUpdate.amount == this.getCapacity() && current.amount < this.getCapacity()) {
+                        PacketHandler.sendPacketToAllPlayers(tile.getDescriptionPacket(), tile.getWorldObj());
+                        lastBeforeUpdate = current.copy();
+                    }
             } else {
                 PacketHandler.sendPacketToAllPlayers(tile.getDescriptionPacket(), tile.getWorldObj());
                 lastBeforeUpdate = current.copy();

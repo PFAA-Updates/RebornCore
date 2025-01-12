@@ -7,6 +7,7 @@ import net.minecraftforge.common.util.ForgeDirection;
  * Simple wrapper class for XYZ coordinates.
  */
 public class CoordTriplet implements Comparable {
+
     public int x, y, z;
 
     public CoordTriplet(int x, int y, int z) {
@@ -33,8 +34,7 @@ public class CoordTriplet implements Comparable {
             return false;
         } else if (other instanceof CoordTriplet) {
             CoordTriplet otherTriplet = (CoordTriplet) other;
-            return this.x == otherTriplet.x && this.y == otherTriplet.y
-                    && this.z == otherTriplet.z;
+            return this.x == otherTriplet.x && this.y == otherTriplet.y && this.z == otherTriplet.z;
         } else {
             return false;
         }
@@ -70,10 +70,9 @@ public class CoordTriplet implements Comparable {
     }
 
     public CoordTriplet[] getNeighbors() {
-        return new CoordTriplet[]
-                {new CoordTriplet(x + 1, y, z), new CoordTriplet(x - 1, y, z),
-                        new CoordTriplet(x, y + 1, z), new CoordTriplet(x, y - 1, z),
-                        new CoordTriplet(x, y, z + 1), new CoordTriplet(x, y, z - 1)};
+        return new CoordTriplet[] { new CoordTriplet(x + 1, y, z), new CoordTriplet(x - 1, y, z),
+            new CoordTriplet(x, y + 1, z), new CoordTriplet(x, y - 1, z), new CoordTriplet(x, y, z + 1),
+            new CoordTriplet(x, y, z - 1) };
     }
 
     // /// IComparable
@@ -121,8 +120,7 @@ public class CoordTriplet implements Comparable {
         }
     }
 
-    public ForgeDirection getOppositeDirectionFromSourceCoords(int x, int y,
-                                                               int z) {
+    public ForgeDirection getOppositeDirectionFromSourceCoords(int x, int y, int z) {
         if (this.x < x) {
             return ForgeDirection.EAST;
         } else if (this.x > x) {

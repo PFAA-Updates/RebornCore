@@ -8,7 +8,6 @@
  */
 package reborncore.client.multiblock;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBlocks;
@@ -24,7 +23,10 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.WorldEvent;
+
 import org.lwjgl.opengl.GL11;
+
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import reborncore.client.multiblock.component.MultiblockComponent;
 import reborncore.common.misc.Location;
 
@@ -54,7 +56,9 @@ public class MultiblockRenderEvent {
 
     @SubscribeEvent
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (currentMultiblock != null && anchor == null && event.action == Action.RIGHT_CLICK_BLOCK && event.entityPlayer == Minecraft.getMinecraft().thePlayer) {
+        if (currentMultiblock != null && anchor == null
+            && event.action == Action.RIGHT_CLICK_BLOCK
+            && event.entityPlayer == Minecraft.getMinecraft().thePlayer) {
             anchor = new ChunkCoordinates(event.x, event.y, event.z);
             angle = MathHelper.floor_double(event.entityPlayer.rotationYaw * 4.0 / 360.0 + 0.5) & 3;
             event.setCanceled(true);
@@ -73,7 +77,8 @@ public class MultiblockRenderEvent {
         }
     }
 
-    private boolean renderComponent(World world, Multiblock mb, MultiblockComponent comp, int anchorX, int anchorY, int anchorZ) {
+    private boolean renderComponent(World world, Multiblock mb, MultiblockComponent comp, int anchorX, int anchorY,
+        int anchorZ) {
         ChunkCoordinates pos = comp.getRelativePosition();
         int x = pos.posX + anchorX;
         int y = pos.posY + anchorY;
@@ -87,13 +92,16 @@ public class MultiblockRenderEvent {
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         GL11.glColor4f(1F, 1F, 1F, 0.4F);
-        GL11.glTranslated(x + 0.5 - RenderManager.renderPosX, y + 0.5 - RenderManager.renderPosY, z + 0.5 - RenderManager.renderPosZ);
+        GL11.glTranslated(
+            x + 0.5 - RenderManager.renderPosX,
+            y + 0.5 - RenderManager.renderPosY,
+            z + 0.5 - RenderManager.renderPosZ);
         Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.locationBlocksTexture);
 
         blockRender.useInventoryTint = false;
         Block block = comp.getBlock();
-        if (IMultiblockRenderHook.renderHooks.containsKey(block))
-            IMultiblockRenderHook.renderHooks.get(block).renderBlockForMultiblock(world, mb, block, comp.getMeta(), blockRender);
+        if (IMultiblockRenderHook.renderHooks.containsKey(block)) IMultiblockRenderHook.renderHooks.get(block)
+            .renderBlockForMultiblock(world, mb, block, comp.getMeta(), blockRender);
         else blockRender.renderBlockAsItem(comp.getBlock(), comp.getMeta(), 1F);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glPopMatrix();
@@ -103,7 +111,9 @@ public class MultiblockRenderEvent {
     @SubscribeEvent
     public void breakBlock(BlockEvent.BreakEvent event) {
         if (partent != null) {
-            if (event.x == partent.x && event.y == partent.y && event.z == partent.z && Minecraft.getMinecraft().theWorld == partent.world) {
+            if (event.x == partent.x && event.y == partent.y
+                && event.z == partent.z
+                && Minecraft.getMinecraft().theWorld == partent.world) {
                 setMultiblock(null);
             }
         }

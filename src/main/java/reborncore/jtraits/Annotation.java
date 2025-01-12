@@ -10,7 +10,8 @@ public class Annotation {
     /**
      * Can be applied to classes.<br/>
      * <br/>
-     * When a mixin uses the class this is applied to as the base, JTraits will make sure the trait {@link #value()} is applied at the end.
+     * When a mixin uses the class this is applied to as the base, JTraits will make sure the trait {@link #value()} is
+     * applied at the end.
      */
     @Target(ElementType.TYPE)
     @Retention(RetentionPolicy.RUNTIME)
@@ -25,7 +26,8 @@ public class Annotation {
     /**
      * Can be applied to classes.<br/>
      * <br/>
-     * When a mixin uses the class this is applied to as the base, JTraits will try to set the boolean variable {@link #value()} to true.
+     * When a mixin uses the class this is applied to as the base, JTraits will try to set the boolean variable
+     * {@link #value()} to true.
      */
     @Target(ElementType.TYPE)
     @Retention(RetentionPolicy.RUNTIME)

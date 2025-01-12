@@ -1,7 +1,8 @@
 package reborncore.common.util;
 
-import cpw.mods.fml.common.FMLLog;
 import org.apache.logging.log4j.Level;
+
+import cpw.mods.fml.common.FMLLog;
 import reborncore.common.IModInfo;
 
 public class LogHelper {

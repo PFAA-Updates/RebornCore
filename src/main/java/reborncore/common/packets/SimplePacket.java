@@ -1,7 +1,7 @@
 package reborncore.common.packets;
 
-import com.google.common.base.Charsets;
-import io.netty.buffer.ByteBuf;
+import java.io.IOException;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -9,9 +9,12 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 
-import java.io.IOException;
+import com.google.common.base.Charsets;
+
+import io.netty.buffer.ByteBuf;
 
 public abstract class SimplePacket {
+
     protected EntityPlayer player;
     protected byte mode;
 
@@ -30,8 +33,7 @@ public abstract class SimplePacket {
         return new String(stringBytes, Charsets.UTF_8);
     }
 
-    public static void writeString(String string, ByteBuf out)
-            throws IOException {
+    public static void writeString(String string, ByteBuf out) throws IOException {
         byte[] stringBytes;
         stringBytes = string.getBytes(Charsets.UTF_8);
         out.writeInt(stringBytes.length);
@@ -47,14 +49,12 @@ public abstract class SimplePacket {
     }
 
     public static EntityPlayer readPlayer(ByteBuf in) throws IOException {
-        if (!in.readBoolean())
-            return null;
+        if (!in.readBoolean()) return null;
         World playerWorld = readWorld(in);
         return playerWorld.getPlayerEntityByName(readString(in));
     }
 
-    public static void writePlayer(EntityPlayer player, ByteBuf out)
-            throws IOException {
+    public static void writePlayer(EntityPlayer player, ByteBuf out) throws IOException {
         if (player == null) {
             out.writeBoolean(false);
             return;
@@ -65,12 +65,10 @@ public abstract class SimplePacket {
     }
 
     public static TileEntity readTileEntity(ByteBuf in) throws IOException {
-        return readWorld(in).getTileEntity(in.readInt(), in.readInt(),
-                in.readInt());
+        return readWorld(in).getTileEntity(in.readInt(), in.readInt(), in.readInt());
     }
 
-    public static void writeTileEntity(TileEntity tileEntity, ByteBuf out)
-            throws IOException {
+    public static void writeTileEntity(TileEntity tileEntity, ByteBuf out) throws IOException {
         writeWorld(tileEntity.getWorldObj(), out);
         out.writeInt(tileEntity.xCoord);
         out.writeInt(tileEntity.yCoord);

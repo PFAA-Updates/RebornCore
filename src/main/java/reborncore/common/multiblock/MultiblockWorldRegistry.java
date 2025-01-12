@@ -1,10 +1,16 @@
 package reborncore.common.multiblock;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
-
-import java.util.*;
 
 /**
  * This class manages all the multiblock controllers that exist in a given
@@ -65,8 +71,7 @@ public class MultiblockWorldRegistry {
     public void tickStart() {
         if (controllers.size() > 0) {
             for (MultiblockControllerBase controller : controllers) {
-                if (controller.worldObj == worldObj
-                        && controller.worldObj.isRemote == worldObj.isRemote) {
+                if (controller.worldObj == worldObj && controller.worldObj.isRemote == worldObj.isRemote) {
                     if (controller.isEmpty()) {
                         // This happens on the server when the user breaks the
                         // last block. It's fine.
@@ -116,8 +121,7 @@ public class MultiblockWorldRegistry {
                 // controller
                 for (IMultiblockPart orphan : orphansToProcess) {
                     coord = orphan.getWorldLocation();
-                    if (!chunkProvider.chunkExists(coord.getChunkX(),
-                            coord.getChunkZ())) {
+                    if (!chunkProvider.chunkExists(coord.getChunkX(), coord.getChunkZ())) {
                         continue;
                     }
 
@@ -138,8 +142,7 @@ public class MultiblockWorldRegistry {
                         // FOREVER ALONE! Create and register a new controller.
                         // THIS IS THE ONLY PLACE WHERE NEW CONTROLLERS ARE
                         // CREATED.
-                        MultiblockControllerBase newController = orphan
-                                .createNewMultiblock();
+                        MultiblockControllerBase newController = orphan.createNewMultiblock();
                         newController.attachBlock(orphan);
                         this.controllers.add(newController);
                     } else if (compatibleControllers.size() > 1) {
@@ -154,8 +157,7 @@ public class MultiblockWorldRegistry {
                         boolean hasAddedToPool = false;
                         List<Set<MultiblockControllerBase>> candidatePools = new ArrayList<Set<MultiblockControllerBase>>();
                         for (Set<MultiblockControllerBase> candidatePool : mergePools) {
-                            if (!Collections.disjoint(candidatePool,
-                                    compatibleControllers)) {
+                            if (!Collections.disjoint(candidatePool, compatibleControllers)) {
                                 // They share at least one element, so that
                                 // means they will all touch after the merge
                                 candidatePools.add(candidatePool);
@@ -167,12 +169,12 @@ public class MultiblockWorldRegistry {
                             mergePools.add(compatibleControllers);
                         } else if (candidatePools.size() == 1) {
                             // Only one pool nearby, simply add to that one
-                            candidatePools.get(0).addAll(compatibleControllers);
+                            candidatePools.get(0)
+                                .addAll(compatibleControllers);
                         } else {
                             // Multiple pools- merge into one, then add the
                             // compatible controllers
-                            Set<MultiblockControllerBase> masterPool = candidatePools
-                                    .get(0);
+                            Set<MultiblockControllerBase> masterPool = candidatePools.get(0);
                             Set<MultiblockControllerBase> consumedPool;
                             for (int i = 1; i < candidatePools.size(); i++) {
                                 consumedPool = candidatePools.get(i);
@@ -198,16 +200,15 @@ public class MultiblockWorldRegistry {
                 // the blocks contained in the other machines
                 MultiblockControllerBase newMaster = null;
                 for (MultiblockControllerBase controller : mergePool) {
-                    if (newMaster == null
-                            || controller.shouldConsume(newMaster)) {
+                    if (newMaster == null || controller.shouldConsume(newMaster)) {
                         newMaster = controller;
                     }
                 }
 
                 if (newMaster == null) {
-                    BeefCoreLog
-                            .fatal("Multiblock system checked a merge pool of size %d, found no master candidates. This should never happen.",
-                                    mergePool.size());
+                    BeefCoreLog.fatal(
+                        "Multiblock system checked a merge pool of size %d, found no master candidates. This should never happen.",
+                        mergePool.size());
                 } else {
                     // Merge all the other machines into the master machine,
                     // then unregister them
@@ -262,8 +263,8 @@ public class MultiblockWorldRegistry {
                 // potentially dead.
                 // Validate that they are empty/dead, then unregister them.
                 if (!controller.isEmpty()) {
-                    BeefCoreLog
-                            .fatal("Found a non-empty controller. Forcing it to shed its blocks and die. This should never happen!");
+                    BeefCoreLog.fatal(
+                        "Found a non-empty controller. Forcing it to shed its blocks and die. This should never happen!");
                     detachedParts.addAll(controller.detachAllBlocks());
                 }
 
@@ -299,8 +300,8 @@ public class MultiblockWorldRegistry {
     public void onPartAdded(IMultiblockPart part) {
         CoordTriplet worldLocation = part.getWorldLocation();
 
-        if (!worldObj.getChunkProvider().chunkExists(worldLocation.getChunkX(),
-                worldLocation.getChunkZ())) {
+        if (!worldObj.getChunkProvider()
+            .chunkExists(worldLocation.getChunkX(), worldLocation.getChunkZ())) {
             // Part goes into the waiting-for-chunk-load list
             Set<IMultiblockPart> partSet;
             long chunkHash = worldLocation.getChunkXZHash();
@@ -335,8 +336,10 @@ public class MultiblockWorldRegistry {
             if (partsAwaitingChunkLoad.containsKey(hash)) {
                 synchronized (partsAwaitingChunkLoadMutex) {
                     if (partsAwaitingChunkLoad.containsKey(hash)) {
-                        partsAwaitingChunkLoad.get(hash).remove(part);
-                        if (partsAwaitingChunkLoad.get(hash).size() <= 0) {
+                        partsAwaitingChunkLoad.get(hash)
+                            .remove(part);
+                        if (partsAwaitingChunkLoad.get(hash)
+                            .size() <= 0) {
                             partsAwaitingChunkLoad.remove(hash);
                         }
                     }
@@ -391,8 +394,7 @@ public class MultiblockWorldRegistry {
         if (partsAwaitingChunkLoad.containsKey(chunkHash)) {
             synchronized (partsAwaitingChunkLoadMutex) {
                 if (partsAwaitingChunkLoad.containsKey(chunkHash)) {
-                    addAllOrphanedPartsThreadsafe(partsAwaitingChunkLoad
-                            .get(chunkHash));
+                    addAllOrphanedPartsThreadsafe(partsAwaitingChunkLoad.get(chunkHash));
                     partsAwaitingChunkLoad.remove(chunkHash);
                 }
             }
@@ -426,13 +428,13 @@ public class MultiblockWorldRegistry {
      * iterate over all controllers in a world!
      *
      * @return An (unmodifiable) set of controllers which are active in this
-     * world.
+     *         world.
      */
     public Set<MultiblockControllerBase> getControllers() {
         return Collections.unmodifiableSet(controllers);
     }
 
-	/* *** PRIVATE HELPERS *** */
+    /* *** PRIVATE HELPERS *** */
 
     private void addOrphanedPartThreadsafe(IMultiblockPart part) {
         synchronized (orphanedPartsMutex) {
@@ -440,8 +442,7 @@ public class MultiblockWorldRegistry {
         }
     }
 
-    private void addAllOrphanedPartsThreadsafe(
-            Collection<? extends IMultiblockPart> parts) {
+    private void addAllOrphanedPartsThreadsafe(Collection<? extends IMultiblockPart> parts) {
         synchronized (orphanedPartsMutex) {
             orphanedParts.addAll(parts);
         }

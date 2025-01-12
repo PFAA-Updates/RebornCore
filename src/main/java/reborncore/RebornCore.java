@@ -10,6 +10,7 @@ import reborncore.common.util.OreUtil;
 
 @Mod(modid = RebornCore.MOD_ID, name = RebornCore.MOD_NAME, version = RebornCore.MOD_VERSION)
 public class RebornCore implements IModInfo {
+
     public static final String MOD_NAME = "RebornCore";
     public static final String MOD_ID = "reborncore";
     public static final String MOD_VERSION = "GRADLETOKEN_VERSION";
@@ -23,11 +24,9 @@ public class RebornCore implements IModInfo {
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         // packets
-        PacketHandler.setChannels(NetworkRegistry.INSTANCE.newChannel(
-                MOD_ID + "_packets", new PacketHandler()));
+        PacketHandler.setChannels(NetworkRegistry.INSTANCE.newChannel(MOD_ID + "_packets", new PacketHandler()));
         OreUtil.scanForOres();
     }
-
 
     @Override
     public String MOD_NAME() {

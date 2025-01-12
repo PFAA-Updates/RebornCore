@@ -2,12 +2,12 @@ package reborncore.common.multiblock.rectangular;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+
 import reborncore.common.multiblock.CoordTriplet;
 import reborncore.common.multiblock.MultiblockControllerBase;
 import reborncore.common.multiblock.MultiblockValidationException;
 
-public abstract class RectangularMultiblockControllerBase extends
-        MultiblockControllerBase {
+public abstract class RectangularMultiblockControllerBase extends MultiblockControllerBase {
 
     protected RectangularMultiblockControllerBase(World world) {
         super(world);
@@ -15,7 +15,7 @@ public abstract class RectangularMultiblockControllerBase extends
 
     /**
      * @return True if the machine is "whole" and should be assembled. False
-     * otherwise.
+     *         otherwise.
      */
     protected void isMachineWhole() throws MultiblockValidationException {
         if (connectedParts.size() < getMinimumNumberOfBlocksForAssembledMachine()) {
@@ -39,47 +39,34 @@ public abstract class RectangularMultiblockControllerBase extends
 
         if (maxX > 0 && deltaX > maxX) {
             throw new MultiblockValidationException(
-                    String.format(
-                            "Machine is too large, it may be at most %d blocks in the X dimension",
-                            maxX));
+                String.format("Machine is too large, it may be at most %d blocks in the X dimension", maxX));
         }
         if (maxY > 0 && deltaY > maxY) {
             throw new MultiblockValidationException(
-                    String.format(
-                            "Machine is too large, it may be at most %d blocks in the Y dimension",
-                            maxY));
+                String.format("Machine is too large, it may be at most %d blocks in the Y dimension", maxY));
         }
         if (maxZ > 0 && deltaZ > maxZ) {
             throw new MultiblockValidationException(
-                    String.format(
-                            "Machine is too large, it may be at most %d blocks in the Z dimension",
-                            maxZ));
+                String.format("Machine is too large, it may be at most %d blocks in the Z dimension", maxZ));
         }
         if (deltaX < minX) {
             throw new MultiblockValidationException(
-                    String.format(
-                            "Machine is too small, it must be at least %d blocks in the X dimension",
-                            minX));
+                String.format("Machine is too small, it must be at least %d blocks in the X dimension", minX));
         }
         if (deltaY < minY) {
             throw new MultiblockValidationException(
-                    String.format(
-                            "Machine is too small, it must be at least %d blocks in the Y dimension",
-                            minY));
+                String.format("Machine is too small, it must be at least %d blocks in the Y dimension", minY));
         }
         if (deltaZ < minZ) {
             throw new MultiblockValidationException(
-                    String.format(
-                            "Machine is too small, it must be at least %d blocks in the Z dimension",
-                            minZ));
+                String.format("Machine is too small, it must be at least %d blocks in the Z dimension", minZ));
         }
 
         // Now we run a simple check on each block within that volume.
         // Any block deviating = NO DEAL SIR
         TileEntity te;
         RectangularMultiblockTileEntityBase part;
-        Class<? extends RectangularMultiblockControllerBase> myClass = this
-                .getClass();
+        Class<? extends RectangularMultiblockControllerBase> myClass = this.getClass();
 
         for (int x = minimumCoord.x; x <= maximumCoord.x; x++) {
             for (int y = minimumCoord.y; y <= maximumCoord.y; y++) {
@@ -94,9 +81,12 @@ public abstract class RectangularMultiblockControllerBase extends
                         // cube of this controller's type
                         if (!myClass.equals(part.getMultiblockControllerType())) {
                             throw new MultiblockValidationException(
-                                    String.format(
-                                            "Part @ %d, %d, %d is incompatible with machines of type %s",
-                                            x, y, z, myClass.getSimpleName()));
+                                String.format(
+                                    "Part @ %d, %d, %d is incompatible with machines of type %s",
+                                    x,
+                                    y,
+                                    z,
+                                    myClass.getSimpleName()));
                         }
                     } else {
                         // This is permitted so that we can incorporate certain

@@ -8,13 +8,14 @@
  */
 package reborncore.client.multiblock;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ChunkCoordinates;
-import reborncore.client.multiblock.component.MultiblockComponent;
 
-import java.util.ArrayList;
-import java.util.List;
+import reborncore.client.multiblock.component.MultiblockComponent;
 
 /**
  * This class describes a Mutiblock object. It's used to display a
@@ -47,32 +48,23 @@ public class Multiblock {
     }
 
     private void changeAxisForNewComponent(int x, int y, int z) {
-        if (x < minX)
-            minX = x;
-        else if (x > maxX)
-            maxX = x;
+        if (x < minX) minX = x;
+        else if (x > maxX) maxX = x;
 
-        if (y < minY)
-            minY = y;
-        else if (y > maxY)
-            maxY = y;
+        if (y < minY) minY = y;
+        else if (y > maxY) maxY = y;
 
-        if (z < minZ)
-            minZ = z;
-        else if (z > maxZ)
-            maxZ = z;
+        if (z < minZ) minZ = z;
+        else if (z > maxZ) maxZ = z;
     }
 
     private void calculateCostForNewComponent(MultiblockComponent comp) {
         ItemStack[] materials = comp.getMaterials();
-        if (materials != null)
-            for (ItemStack stack : materials)
-                addStack(stack);
+        if (materials != null) for (ItemStack stack : materials) addStack(stack);
     }
 
     private void addStack(ItemStack stack) {
-        if (stack == null)
-            return;
+        if (stack == null) return;
 
         for (ItemStack oStack : materials)
             if (oStack.isItemEqual(stack) && ItemStack.areItemStackTagsEqual(oStack, stack)) {
@@ -98,14 +90,12 @@ public class Multiblock {
      * only multiples of pi/2.
      */
     public void rotate(double angle) {
-        for (MultiblockComponent comp : getComponents())
-            comp.rotate(angle);
+        for (MultiblockComponent comp : getComponents()) comp.rotate(angle);
     }
 
     public Multiblock copy() {
         Multiblock mb = new Multiblock();
-        for (MultiblockComponent comp : getComponents())
-            mb.addComponent(comp.copy());
+        for (MultiblockComponent comp : getComponents()) mb.addComponent(comp.copy());
 
         return mb;
     }

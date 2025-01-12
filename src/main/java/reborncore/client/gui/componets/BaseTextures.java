@@ -1,13 +1,12 @@
 package reborncore.client.gui.componets;
 
 import net.minecraft.util.ResourceLocation;
+
 import reborncore.api.gui.GuiTexture;
 
 public class BaseTextures {
 
-    private static final ResourceLocation baseTexture = new ResourceLocation(
-            "reborncore", "textures/gui/base.png");
-
+    private static final ResourceLocation baseTexture = new ResourceLocation("reborncore", "textures/gui/base.png");
 
     public GuiTexture background;
     public GuiTexture slot;
@@ -22,7 +21,6 @@ public class BaseTextures {
     public GuiTexture tankScale;
     public GuiTexture powerBaseOld;
     public GuiTexture powerOverlayOld;
-
 
     public BaseTextures() {
         background = new GuiTexture(baseTexture, 176, 166, 0, 0);

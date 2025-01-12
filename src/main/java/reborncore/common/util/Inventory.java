@@ -56,8 +56,7 @@ public class Inventory implements IInventory {
         }
         contents[slotId] = itemstack;
 
-        if (itemstack != null
-                && itemstack.stackSize > this.getInventoryStackLimit()) {
+        if (itemstack != null && itemstack.stackSize > this.getInventoryStackLimit()) {
             itemstack.stackSize = this.getInventoryStackLimit();
         }
         markDirty();
@@ -80,20 +79,17 @@ public class Inventory implements IInventory {
     }
 
     @Override
-    public void openInventory() {
-    }
+    public void openInventory() {}
 
     @Override
-    public void closeInventory() {
-    }
+    public void closeInventory() {}
 
     public void readFromNBT(NBTTagCompound data) {
         readFromNBT(data, "Items");
     }
 
     public void readFromNBT(NBTTagCompound data, String tag) {
-        NBTTagList nbttaglist = data
-                .getTagList(tag, Constants.NBT.TAG_COMPOUND);
+        NBTTagList nbttaglist = data.getTagList(tag, Constants.NBT.TAG_COMPOUND);
 
         for (int j = 0; j < nbttaglist.tagCount(); ++j) {
             NBTTagCompound slot = nbttaglist.getCompoundTagAt(j);
@@ -104,8 +100,7 @@ public class Inventory implements IInventory {
                 index = slot.getByte("Slot");
             }
             if (index >= 0 && index < contents.length) {
-                setInventorySlotContents(index,
-                        ItemStack.loadItemStackFromNBT(slot));
+                setInventorySlotContents(index, ItemStack.loadItemStackFromNBT(slot));
             }
         }
         hasChanged = true;

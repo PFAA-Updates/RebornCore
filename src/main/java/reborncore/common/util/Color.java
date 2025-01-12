@@ -5,6 +5,7 @@ package reborncore.common.util;
  */
 
 public enum Color {
+
     BLACK("\u00A70"), //
     DARK_BLUE("\u00A71"), //
     DARK_GREEN("\u00A72"), //

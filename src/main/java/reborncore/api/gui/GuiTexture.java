@@ -1,6 +1,7 @@
 package reborncore.api.gui;
 
 import net.minecraft.util.ResourceLocation;
+
 import reborncore.client.gui.BaseGui;
 
 public class GuiTexture {
@@ -19,14 +20,13 @@ public class GuiTexture {
         this.sheetY = sheetY;
     }
 
-
-    public void draw(int x, int y, int width, int height, BaseGui baseGui){
+    public void draw(int x, int y, int width, int height, BaseGui baseGui) {
         int a = (baseGui.width - baseGui.getXSize()) / 2;
         int b = (baseGui.height - baseGui.getYSize()) / 2;
-        baseGui.drawTexturedModalRect(x + a , y + b, sheetX, sheetY, width, height);
+        baseGui.drawTexturedModalRect(x + a, y + b, sheetX, sheetY, width, height);
     }
 
-    public void draw(int x, int y, BaseGui baseGui){
+    public void draw(int x, int y, BaseGui baseGui) {
         draw(x, y, width, height, baseGui);
     }
 

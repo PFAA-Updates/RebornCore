@@ -3,6 +3,7 @@ package reborncore.common.misc;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class Functions {
+
     public static int getIntDirFromDirection(ForgeDirection dir) {
         switch (dir) {
             case DOWN:

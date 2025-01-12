@@ -1,43 +1,37 @@
 package reborncore.common.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.oredict.OreDictionary;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by mark on 12/04/15.
  */
 public class ItemUtils {
 
-    public static boolean isItemEqual(final ItemStack a, final ItemStack b,
-                                      final boolean matchDamage, final boolean matchNBT) {
-        if (a == null || b == null)
-            return false;
-        if (a.getItem() != b.getItem())
-            return false;
-        if (matchNBT && !ItemStack.areItemStackTagsEqual(a, b))
-            return false;
+    public static boolean isItemEqual(final ItemStack a, final ItemStack b, final boolean matchDamage,
+        final boolean matchNBT) {
+        if (a == null || b == null) return false;
+        if (a.getItem() != b.getItem()) return false;
+        if (matchNBT && !ItemStack.areItemStackTagsEqual(a, b)) return false;
         if (matchDamage && a.getHasSubtypes()) {
-            if (isWildcard(a) || isWildcard(b))
-                return true;
-            if (a.getItemDamage() != b.getItemDamage())
-                return false;
+            if (isWildcard(a) || isWildcard(b)) return true;
+            if (a.getItemDamage() != b.getItemDamage()) return false;
         }
         return true;
     }
 
-    public static boolean isItemEqual(ItemStack a, ItemStack b,
-                                      boolean matchDamage, boolean matchNBT, boolean useOreDic) {
+    public static boolean isItemEqual(ItemStack a, ItemStack b, boolean matchDamage, boolean matchNBT,
+        boolean useOreDic) {
         if (isItemEqual(a, b, matchDamage, matchNBT)) {
             return true;
         }
-        if (a == null || b == null)
-            return false;
+        if (a == null || b == null) return false;
         if (useOreDic) {
             for (int inta : OreDictionary.getOreIDs(a)) {
                 for (int intb : OreDictionary.getOreIDs(b)) {
@@ -50,7 +44,6 @@ public class ItemUtils {
         return false;
     }
 
-
     public static boolean isWildcard(ItemStack stack) {
         return isWildcard(stack.getItemDamage());
     }
@@ -59,8 +52,7 @@ public class ItemUtils {
         return damage == -1 || damage == OreDictionary.WILDCARD_VALUE;
     }
 
-    public static void writeInvToNBT(IInventory inv, String tag,
-                                     NBTTagCompound data) {
+    public static void writeInvToNBT(IInventory inv, String tag, NBTTagCompound data) {
         NBTTagList list = new NBTTagList();
         for (byte slot = 0; slot < inv.getSizeInventory(); slot++) {
             ItemStack stack = inv.getStackInSlot(slot);
@@ -74,8 +66,7 @@ public class ItemUtils {
         data.setTag(tag, list);
     }
 
-    public static void readInvFromNBT(IInventory inv, String tag,
-                                      NBTTagCompound data) {
+    public static void readInvFromNBT(IInventory inv, String tag, NBTTagCompound data) {
         NBTTagList list = data.getTagList(tag, 10);
         for (byte entry = 0; entry < list.tagCount(); entry++) {
             NBTTagCompound itemTag = list.getCompoundTagAt(entry);
@@ -88,10 +79,8 @@ public class ItemUtils {
     }
 
     public static void writeItemToNBT(ItemStack stack, NBTTagCompound data) {
-        if (stack == null || stack.stackSize <= 0)
-            return;
-        if (stack.stackSize > 127)
-            stack.stackSize = 127;
+        if (stack == null || stack.stackSize <= 0) return;
+        if (stack.stackSize > 127) stack.stackSize = 127;
         stack.writeToNBT(data);
     }
 

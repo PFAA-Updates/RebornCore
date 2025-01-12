@@ -1,8 +1,8 @@
 package reborncore.api.fuel;
 
-import net.minecraftforge.fluids.Fluid;
-
 import java.util.HashMap;
+
+import net.minecraftforge.fluids.Fluid;
 
 public class FluidPowerManager {
 

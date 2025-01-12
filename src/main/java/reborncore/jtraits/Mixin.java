@@ -1,26 +1,26 @@
 package reborncore.jtraits;
+
 import static org.objectweb.asm.Opcodes.*;
 
-        import java.util.ArrayList;
-        import java.util.Iterator;
-        import java.util.List;
-        import java.util.ListIterator;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
-        import org.objectweb.asm.AnnotationVisitor;
-        import org.objectweb.asm.ClassWriter;
-        import org.objectweb.asm.FieldVisitor;
-        import org.objectweb.asm.Label;
-        import org.objectweb.asm.MethodVisitor;
-        import org.objectweb.asm.Type;
-        import org.objectweb.asm.tree.AbstractInsnNode;
-        import org.objectweb.asm.tree.AnnotationNode;
-        import org.objectweb.asm.tree.ClassNode;
-        import org.objectweb.asm.tree.FieldNode;
-        import org.objectweb.asm.tree.InsnList;
-        import org.objectweb.asm.tree.MethodInsnNode;
-        import org.objectweb.asm.tree.MethodNode;
-        import org.objectweb.asm.tree.VarInsnNode;
-
+import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.AnnotationNode;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.VarInsnNode;
 
 public class Mixin<T> {
 
@@ -64,12 +64,12 @@ public class Mixin<T> {
         Class<?> c = clazz;
         do {
             Annotation.CheckMixin a = c.getAnnotation(Annotation.CheckMixin.class);
-            if (a == null)
-                continue;
+            if (a == null) continue;
 
             annCheckMixin = true;
             annCheckMixinField = a.value();
-            annCheckMixinOwner = c.getName().replace('.', '/');
+            annCheckMixinOwner = c.getName()
+                .replace('.', '/');
             break;
         } while ((c = c.getSuperclass()) != null && c != Object.class);
     }
@@ -89,7 +89,13 @@ public class Mixin<T> {
     public byte[] mixin_do() {
 
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
-        writer.visit(V1_6, ACC_PUBLIC, newType, null, parentType, traitNode.interfaces.toArray(new String[traitNode.interfaces.size()]));
+        writer.visit(
+            V1_6,
+            ACC_PUBLIC,
+            newType,
+            null,
+            parentType,
+            traitNode.interfaces.toArray(new String[traitNode.interfaces.size()]));
         writer.visitSource(traitType.substring(traitType.lastIndexOf("/") + 1) + ".java", null);
 
         transferParentFields(writer);
@@ -104,8 +110,7 @@ public class Mixin<T> {
                 break;
             }
         }
-        if (!hasSelfObject)
-            writer.visitField(ACC_PUBLIC | ACC_SYNTHETIC, "_self", "Ljava/lang/Object;", null, null);
+        if (!hasSelfObject) writer.visitField(ACC_PUBLIC | ACC_SYNTHETIC, "_self", "Ljava/lang/Object;", null, null);
 
         return writer.toByteArray();
     }
@@ -113,8 +118,7 @@ public class Mixin<T> {
     @SuppressWarnings("unchecked")
     public Class<T> mixin() {
 
-        if (result != null)
-            return result;
+        if (result != null) return result;
 
         return result = (Class<T>) ClassLoadingHelper.instance.addMixin(newType.replace('/', '.'), mixin_do(), this);
     }
@@ -122,23 +126,24 @@ public class Mixin<T> {
     private void transferParentFields(ClassWriter writer) {
 
         for (FieldNode f : parentNode.fields) {
-            if (f.name.equals("_super"))
-                continue;
+            if (f.name.equals("_super")) continue;
             FieldVisitor v = writer.visitField(ACC_PUBLIC, f.name, f.desc, null, f.value);
             if (f.visibleAnnotations != null) {
                 for (AnnotationNode a : f.visibleAnnotations) {
-                    if (a.values == null)
-                        continue;
+                    if (a.values == null) continue;
                     AnnotationVisitor av = v.visitAnnotation(a.desc, true);
                     Iterator<Object> it = a.values.iterator();
                     while (it.hasNext()) {
                         String key = (String) it.next();
                         Object val = it.next();
                         try {
-                            if (val instanceof Object[]
-                                    && !(val instanceof byte[] || val instanceof boolean[] || val instanceof short[]
-                                    || val instanceof char[] || val instanceof int[] || val instanceof long[]
-                                    || val instanceof float[] || val instanceof double[])) {
+                            if (val instanceof Object[] && !(val instanceof byte[] || val instanceof boolean[]
+                                || val instanceof short[]
+                                || val instanceof char[]
+                                || val instanceof int[]
+                                || val instanceof long[]
+                                || val instanceof float[]
+                                || val instanceof double[])) {
                                 av = av.visitArray(key);
                                 int i = 0;
                                 for (Object o : (Object[]) val) {
@@ -162,15 +167,13 @@ public class Mixin<T> {
     private void transferTraitFields(ClassWriter writer) {
 
         for (FieldNode f : traitNode.fields) {
-            if (f.name.equals("_super"))
-                continue;
+            if (f.name.equals("_super")) continue;
             FieldVisitor v = writer.visitField(ACC_PUBLIC, f.name, f.desc, null, f.value);
             if (f.visibleAnnotations != null) {
                 for (AnnotationNode a : f.visibleAnnotations) {
                     AnnotationVisitor av = v.visitAnnotation(a.desc, true);
                     Iterator<Object> it = a.values.iterator();
-                    while (it.hasNext())
-                        av.visit((String) it.next(), it.next());
+                    while (it.hasNext()) av.visit((String) it.next(), it.next());
                 }
             }
             v.visitEnd();
@@ -181,8 +184,13 @@ public class Mixin<T> {
 
         List<String> constructors = new ArrayList<String>();
         for (MethodNode m : traitNode.methods) {
-            MethodVisitor v = writer.visitMethod(ACC_PUBLIC | ACC_SYNTHETIC
-                    | (m.access & ~ACC_ABSTRACT & ~ACC_INTERFACE & ~ACC_PROTECTED & ~ACC_PRIVATE), m.name, m.desc, null, null);
+            MethodVisitor v = writer.visitMethod(
+                ACC_PUBLIC | ACC_SYNTHETIC
+                    | (m.access & ~ACC_ABSTRACT & ~ACC_INTERFACE & ~ACC_PROTECTED & ~ACC_PRIVATE),
+                m.name,
+                m.desc,
+                null,
+                null);
             v.visitCode();
 
             ASMUtils.resetCopy(m.instructions);
@@ -190,15 +198,19 @@ public class Mixin<T> {
 
             // Transfer parent node
             if (m.name.equals("<init>") || m.name.equals("<clinit>")) {
-                if (m.name.equals("<init>"))
-                    constructors.add(m.name + m.desc);
+                if (m.name.equals("<init>")) constructors.add(m.name + m.desc);
 
                 v.visitVarInsn(ALOAD, 0);
                 int index = 1;
                 for (Type t : Type.getArgumentTypes(m.desc)) {
-                    v.visitVarInsn(t == Type.BOOLEAN_TYPE || t == Type.BYTE_TYPE || t == Type.CHAR_TYPE || t == Type.INT_TYPE
-                            || t == Type.LONG_TYPE || t == Type.SHORT_TYPE ? ILOAD : (t == Type.DOUBLE_TYPE ? DLOAD
-                            : (t == Type.FLOAT_TYPE ? FLOAD : ALOAD)), index);
+                    v.visitVarInsn(
+                        t == Type.BOOLEAN_TYPE || t == Type.BYTE_TYPE
+                            || t == Type.CHAR_TYPE
+                            || t == Type.INT_TYPE
+                            || t == Type.LONG_TYPE
+                            || t == Type.SHORT_TYPE ? ILOAD
+                                : (t == Type.DOUBLE_TYPE ? DLOAD : (t == Type.FLOAT_TYPE ? FLOAD : ALOAD)),
+                        index);
                     index += t.getSize();
                 }
                 v.visitMethodInsn(INVOKESPECIAL, parentType, m.name, m.desc, false);
@@ -222,26 +234,24 @@ public class Mixin<T> {
             while (originalInsns.hasNext()) {
                 AbstractInsnNode node = originalInsns.next();
                 AbstractInsnNode next = node.getNext(), prev = node.getPrevious();
-                if (next != null && node instanceof VarInsnNode && ((VarInsnNode) node).var == 0 && next instanceof MethodInsnNode
-                        && ((MethodInsnNode) next).name.equals("<init>"))
-                    continue;
-                if (prev != null && prev instanceof VarInsnNode && ((VarInsnNode) prev).var == 0 && node instanceof MethodInsnNode
-                        && ((MethodInsnNode) node).name.equals("<init>"))
-                    continue;
+                if (next != null && node instanceof VarInsnNode
+                    && ((VarInsnNode) node).var == 0
+                    && next instanceof MethodInsnNode
+                    && ((MethodInsnNode) next).name.equals("<init>")) continue;
+                if (prev != null && prev instanceof VarInsnNode
+                    && ((VarInsnNode) prev).var == 0
+                    && node instanceof MethodInsnNode
+                    && ((MethodInsnNode) node).name.equals("<init>")) continue;
 
                 int result = ASMUtils.addInstructionsWithSuperRedirections(node, added, supercall, this);
-                if (result == 1)
-                    supercall = 1;
-                else if (result == 2)
-                    supercall = 2;
-                else if (result == 3)
-                    supercall = 3;
+                if (result == 1) supercall = 1;
+                else if (result == 2) supercall = 2;
+                else if (result == 3) supercall = 3;
 
                 if (added.isEmpty()) {
                     ASMUtils.copyInsn(list, node);
                 } else {
-                    for (AbstractInsnNode n_ : added)
-                        list.add(n_);
+                    for (AbstractInsnNode n_ : added) list.add(n_);
                     added.clear();
                 }
             }
@@ -255,8 +265,7 @@ public class Mixin<T> {
                 for (AnnotationNode a : m.visibleAnnotations) {
                     AnnotationVisitor av = v.visitAnnotation(a.desc, true);
                     Iterator<Object> it = a.values.iterator();
-                    while (it.hasNext())
-                        av.visit((String) it.next(), it.next());
+                    while (it.hasNext()) av.visit((String) it.next(), it.next());
                 }
             }
             v.visitEnd();
@@ -269,9 +278,15 @@ public class Mixin<T> {
                 v.visitVarInsn(ALOAD, 0);
                 int index = 1;
                 for (Type t : Type.getArgumentTypes(m.desc)) {
-                    v.visitVarInsn(t == Type.BOOLEAN_TYPE || t == Type.BYTE_TYPE || t == Type.CHAR_TYPE || t == Type.INT_TYPE
-                            || t == Type.SHORT_TYPE ? ILOAD : (t == Type.LONG_TYPE ? LLOAD : (t == Type.DOUBLE_TYPE ? DLOAD
-                            : (t == Type.FLOAT_TYPE ? FLOAD : ALOAD))), index);
+                    v.visitVarInsn(
+                        t == Type.BOOLEAN_TYPE || t == Type.BYTE_TYPE
+                            || t == Type.CHAR_TYPE
+                            || t == Type.INT_TYPE
+                            || t == Type.SHORT_TYPE
+                                ? ILOAD
+                                : (t == Type.LONG_TYPE ? LLOAD
+                                    : (t == Type.DOUBLE_TYPE ? DLOAD : (t == Type.FLOAT_TYPE ? FLOAD : ALOAD))),
+                        index);
                     index += t.getSize();
                 }
                 v.visitMethodInsn(INVOKESPECIAL, parentType, m.name, m.desc, false);

@@ -1,8 +1,7 @@
 package reborncore.common.misc.vecmath;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.util.StringTokenizer;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -13,9 +12,12 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import java.util.StringTokenizer;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class Vecs3d {
+
     protected double x, y, z;
     protected World w = null;
 
@@ -141,8 +143,7 @@ public class Vecs3d {
 
         double len = length();
 
-        if (len == 0)
-            return v;
+        if (len == 0) return v;
 
         v.x /= len;
         v.y /= len;
@@ -163,8 +164,7 @@ public class Vecs3d {
 
     public Vecs3d cross(Vecs3d v) {
 
-        return new Vecs3d(y * v.getZ() - z * v.getY(), x * v.getZ() - z
-                * v.getX(), x * v.getY() - y * v.getX());
+        return new Vecs3d(y * v.getZ() - z * v.getY(), x * v.getZ() - z * v.getX(), x * v.getY() - y * v.getX());
     }
 
     public Vecs3d getRelative(double x, double y, double z) {
@@ -180,10 +180,8 @@ public class Vecs3d {
     public ForgeDirection getDirectionTo(Vecs3d vec) {
 
         for (ForgeDirection d : ForgeDirection.VALID_DIRECTIONS)
-            if (getBlockX() + d.offsetX == vec.getBlockX()
-                    && getBlockY() + d.offsetY == vec.getBlockY()
-                    && getBlockZ() + d.offsetZ == vec.getBlockZ())
-                return d;
+            if (getBlockX() + d.offsetX == vec.getBlockX() && getBlockY() + d.offsetY == vec.getBlockY()
+                && getBlockZ() + d.offsetZ == vec.getBlockZ()) return d;
         return null;
     }
 
@@ -224,14 +222,12 @@ public class Vecs3d {
         if (hasWorld()) {
             Block bl = w.getBlock((int) x, (int) y, (int) z);
 
-            if (b == null && bl == Blocks.air)
-                return true;
-            if (b == null && checkAir && bl.getMaterial() == Material.air)
-                return true;
-            if (b == null && checkAir && bl.isAir(w, (int) x, (int) y, (int) z))
-                return true;
+            if (b == null && bl == Blocks.air) return true;
+            if (b == null && checkAir && bl.getMaterial() == Material.air) return true;
+            if (b == null && checkAir && bl.isAir(w, (int) x, (int) y, (int) z)) return true;
 
-            return bl.getClass().isInstance(b);
+            return bl.getClass()
+                .isInstance(b);
         }
         return false;
     }
@@ -252,8 +248,7 @@ public class Vecs3d {
     public Block getBlock(boolean airIsNull) {
 
         if (hasWorld()) {
-            if (airIsNull && isBlock(null, true))
-                return null;
+            if (airIsNull && isBlock(null, true)) return null;
             return w.getBlock((int) x, (int) y, (int) z);
 
         }
@@ -343,8 +338,7 @@ public class Vecs3d {
     @Override
     public int hashCode() {
 
-        return new Double(x).hashCode() + new Double(y).hashCode() << 8 + new Double(
-                z).hashCode() << 16;
+        return new Double(x).hashCode() + new Double(y).hashCode() << 8 + new Double(z).hashCode() << 16;
     }
 
     public Vec3 toVec3() {
@@ -356,28 +350,21 @@ public class Vecs3d {
     public String toString() {
 
         String s = "Vector3{";
-        if (hasWorld())
-            s += "w=" + w.provider.dimensionId + ";";
+        if (hasWorld()) s += "w=" + w.provider.dimensionId + ";";
         s += "x=" + x + ";y=" + y + ";z=" + z + "}";
         return s;
     }
 
     public ForgeDirection toForgeDirection() {
 
-        if (z == 1)
-            return ForgeDirection.SOUTH;
-        if (z == -1)
-            return ForgeDirection.NORTH;
+        if (z == 1) return ForgeDirection.SOUTH;
+        if (z == -1) return ForgeDirection.NORTH;
 
-        if (x == 1)
-            return ForgeDirection.EAST;
-        if (x == -1)
-            return ForgeDirection.WEST;
+        if (x == 1) return ForgeDirection.EAST;
+        if (x == -1) return ForgeDirection.WEST;
 
-        if (y == 1)
-            return ForgeDirection.UP;
-        if (y == -1)
-            return ForgeDirection.DOWN;
+        if (y == 1) return ForgeDirection.UP;
+        if (y == -1) return ForgeDirection.DOWN;
 
         return ForgeDirection.UNKNOWN;
     }
@@ -392,10 +379,12 @@ public class Vecs3d {
             while (st.hasMoreTokens()) {
                 String t = st.nextToken();
 
-                if (t.toLowerCase().startsWith("w")) {
+                if (t.toLowerCase()
+                    .startsWith("w")) {
                     int world = Integer.parseInt(t.split("=")[1]);
-                    if (FMLCommonHandler.instance().getEffectiveSide()
-                            .isServer()) {
+                    if (FMLCommonHandler.instance()
+                        .getEffectiveSide()
+                        .isServer()) {
                         for (World wo : MinecraftServer.getServer().worldServers) {
                             if (wo.provider.dimensionId == world) {
                                 w = wo;
@@ -407,12 +396,12 @@ public class Vecs3d {
                     }
                 }
 
-                if (t.toLowerCase().startsWith("x"))
-                    x = Double.parseDouble(t.split("=")[1]);
-                if (t.toLowerCase().startsWith("y"))
-                    y = Double.parseDouble(t.split("=")[1]);
-                if (t.toLowerCase().startsWith("z"))
-                    z = Double.parseDouble(t.split("=")[1]);
+                if (t.toLowerCase()
+                    .startsWith("x")) x = Double.parseDouble(t.split("=")[1]);
+                if (t.toLowerCase()
+                    .startsWith("y")) y = Double.parseDouble(t.split("=")[1]);
+                if (t.toLowerCase()
+                    .startsWith("z")) z = Double.parseDouble(t.split("=")[1]);
             }
 
             if (w != null) {
@@ -427,8 +416,7 @@ public class Vecs3d {
     @SideOnly(Side.CLIENT)
     private static World getClientWorld(int world) {
 
-        if (Minecraft.getMinecraft().theWorld.provider.dimensionId != world)
-            return null;
+        if (Minecraft.getMinecraft().theWorld.provider.dimensionId != world) return null;
         return Minecraft.getMinecraft().theWorld;
     }
 

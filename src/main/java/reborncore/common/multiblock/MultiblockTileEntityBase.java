@@ -1,5 +1,10 @@
 package reborncore.common.multiblock;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -7,17 +12,13 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.chunk.IChunkProvider;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 /**
  * Base logic class for Multiblock-connected tile entities. Most multiblock
  * machines should derive from this and implement their game logic in certain
  * abstract methods.
  */
 public abstract class MultiblockTileEntityBase extends IMultiblockPart {
+
     private MultiblockControllerBase controller;
     private boolean visited;
 
@@ -44,10 +45,9 @@ public abstract class MultiblockTileEntityBase extends IMultiblockPart {
         IMultiblockPart[] partsToCheck = getNeighboringParts();
         for (IMultiblockPart neighborPart : partsToCheck) {
             if (neighborPart.isConnected()) {
-                MultiblockControllerBase candidate = neighborPart
-                        .getMultiblockController();
-                if (!candidate.getClass().equals(
-                        this.getMultiblockControllerType())) {
+                MultiblockControllerBase candidate = neighborPart.getMultiblockController();
+                if (!candidate.getClass()
+                    .equals(this.getMultiblockControllerType())) {
                     // Skip multiblocks with incompatible types
                     continue;
                 }
@@ -55,8 +55,7 @@ public abstract class MultiblockTileEntityBase extends IMultiblockPart {
                 if (controllers == null) {
                     controllers = new HashSet<MultiblockControllerBase>();
                     bestController = candidate;
-                } else if (!controllers.contains(candidate)
-                        && candidate.shouldConsume(bestController)) {
+                } else if (!controllers.contains(candidate) && candidate.shouldConsume(bestController)) {
                     bestController = candidate;
                 }
 
@@ -77,9 +76,11 @@ public abstract class MultiblockTileEntityBase extends IMultiblockPart {
     @Override
     public void assertDetached() {
         if (this.controller != null) {
-            BeefCoreLog
-                    .info("[assert] Part @ (%d, %d, %d) should be detached already, but detected that it was not. This is not a fatal error, and will be repaired, but is unusual.",
-                            xCoord, yCoord, zCoord);
+            BeefCoreLog.info(
+                "[assert] Part @ (%d, %d, %d) should be detached already, but detected that it was not. This is not a fatal error, and will be repaired, but is unusual.",
+                xCoord,
+                yCoord,
+                zCoord);
             this.controller = null;
         }
     }
@@ -171,13 +172,11 @@ public abstract class MultiblockTileEntityBase extends IMultiblockPart {
     public Packet getDescriptionPacket() {
         NBTTagCompound packetData = new NBTTagCompound();
         encodeDescriptionPacket(packetData);
-        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0,
-                packetData);
+        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, packetData);
     }
 
     @Override
-    public void onDataPacket(NetworkManager network,
-                             S35PacketUpdateTileEntity packet) {
+    public void onDataPacket(NetworkManager network, S35PacketUpdateTileEntity packet) {
         decodeDescriptionPacket(packet.func_148857_g());
     }
 
@@ -238,8 +237,7 @@ public abstract class MultiblockTileEntityBase extends IMultiblockPart {
     // /// Game logic callbacks (IMultiblockPart)
 
     @Override
-    public abstract void onMachineAssembled(
-            MultiblockControllerBase multiblockControllerBase);
+    public abstract void onMachineAssembled(MultiblockControllerBase multiblockControllerBase);
 
     @Override
     public abstract void onMachineBroken();
@@ -319,26 +317,23 @@ public abstract class MultiblockTileEntityBase extends IMultiblockPart {
 
     @Override
     public IMultiblockPart[] getNeighboringParts() {
-        CoordTriplet[] neighbors = new CoordTriplet[]
-                {new CoordTriplet(this.xCoord - 1, this.yCoord, this.zCoord),
-                        new CoordTriplet(this.xCoord, this.yCoord - 1, this.zCoord),
-                        new CoordTriplet(this.xCoord, this.yCoord, this.zCoord - 1),
-                        new CoordTriplet(this.xCoord, this.yCoord, this.zCoord + 1),
-                        new CoordTriplet(this.xCoord, this.yCoord + 1, this.zCoord),
-                        new CoordTriplet(this.xCoord + 1, this.yCoord, this.zCoord)};
+        CoordTriplet[] neighbors = new CoordTriplet[] { new CoordTriplet(this.xCoord - 1, this.yCoord, this.zCoord),
+            new CoordTriplet(this.xCoord, this.yCoord - 1, this.zCoord),
+            new CoordTriplet(this.xCoord, this.yCoord, this.zCoord - 1),
+            new CoordTriplet(this.xCoord, this.yCoord, this.zCoord + 1),
+            new CoordTriplet(this.xCoord, this.yCoord + 1, this.zCoord),
+            new CoordTriplet(this.xCoord + 1, this.yCoord, this.zCoord) };
 
         TileEntity te;
         List<IMultiblockPart> neighborParts = new ArrayList<IMultiblockPart>();
         IChunkProvider chunkProvider = worldObj.getChunkProvider();
         for (CoordTriplet neighbor : neighbors) {
-            if (!chunkProvider.chunkExists(neighbor.getChunkX(),
-                    neighbor.getChunkZ())) {
+            if (!chunkProvider.chunkExists(neighbor.getChunkX(), neighbor.getChunkZ())) {
                 // Chunk not loaded, skip it.
                 continue;
             }
 
-            te = this.worldObj
-                    .getTileEntity(neighbor.x, neighbor.y, neighbor.z);
+            te = this.worldObj.getTileEntity(neighbor.x, neighbor.y, neighbor.z);
             if (te instanceof IMultiblockPart) {
                 neighborParts.add((IMultiblockPart) te);
             }
@@ -348,16 +343,14 @@ public abstract class MultiblockTileEntityBase extends IMultiblockPart {
     }
 
     @Override
-    public void onOrphaned(MultiblockControllerBase controller, int oldSize,
-                           int newSize) {
+    public void onOrphaned(MultiblockControllerBase controller, int oldSize, int newSize) {
         this.markDirty();
         worldObj.markTileEntityChunkModified(xCoord, yCoord, zCoord, this);
     }
 
     // // Helper functions for notifying neighboring blocks
     protected void notifyNeighborsOfBlockChange() {
-        worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord,
-                getBlockType());
+        worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, getBlockType());
     }
 
     protected void notifyNeighborsOfTileChange() {
@@ -366,9 +359,9 @@ public abstract class MultiblockTileEntityBase extends IMultiblockPart {
 
     // /// Private/Protected Logic Helpers
     /*
-	 * Detaches this block from its controller. Calls detachBlock() and clears
-	 * the controller member.
-	 */
+     * Detaches this block from its controller. Calls detachBlock() and clears
+     * the controller member.
+     */
     protected void detachSelf(boolean chunkUnloading) {
         if (this.controller != null) {
             // Clean part out of controller

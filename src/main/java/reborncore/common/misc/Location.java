@@ -8,6 +8,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class Location implements Comparable<Location> {
+
     public int x;
     public int y;
     public int z;
@@ -130,9 +131,8 @@ public class Location implements Comparable<Location> {
     }
 
     public int getDifference(Location otherLoc) {
-        return (int) Math.sqrt(Math.pow(this.x - otherLoc.x, 2)
-                + Math.pow(this.y - otherLoc.y, 2)
-                + Math.pow(this.z - otherLoc.z, 2));
+        return (int) Math.sqrt(
+            Math.pow(this.x - otherLoc.x, 2) + Math.pow(this.y - otherLoc.y, 2) + Math.pow(this.z - otherLoc.z, 2));
     }
 
     public String printLocation() {
@@ -280,12 +280,6 @@ public class Location implements Comparable<Location> {
 
     @Override
     public String toString() {
-        return "Location{" +
-                "x=" + x +
-                ", y=" + y +
-                ", z=" + z +
-                ", depth=" + depth +
-                ", world=" + world +
-                '}';
+        return "Location{" + "x=" + x + ", y=" + y + ", z=" + z + ", depth=" + depth + ", world=" + world + '}';
     }
 }

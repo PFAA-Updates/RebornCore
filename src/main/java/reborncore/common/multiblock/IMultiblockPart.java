@@ -1,9 +1,9 @@
 package reborncore.common.multiblock;
 
+import java.util.Set;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-
-import java.util.Set;
 
 /**
  * Basic interface for a multiblock machine part. This is defined as an abstract
@@ -14,11 +14,12 @@ import java.util.Set;
  * {@link MultiblockTileEntityBase}
  */
 public abstract class IMultiblockPart extends TileEntity {
+
     public static final int INVALID_DISTANCE = Integer.MAX_VALUE;
 
     /**
      * @return True if this block is connected to a multiblock controller. False
-     * otherwise.
+     *         otherwise.
      */
     public abstract boolean isConnected();
 
@@ -32,7 +33,7 @@ public abstract class IMultiblockPart extends TileEntity {
      * form.
      *
      * @return A CoordTriplet with its x,y,z members set to the location of this
-     * tile entity in the world.
+     *         tile entity in the world.
      */
     public abstract CoordTriplet getWorldLocation();
 
@@ -52,8 +53,7 @@ public abstract class IMultiblockPart extends TileEntity {
      * @param multiblockController The multiblock controller that no longer controls this tile
      *                             entity.
      */
-    public abstract void onDetached(
-            MultiblockControllerBase multiblockController);
+    public abstract void onDetached(MultiblockControllerBase multiblockController);
 
     /**
      * Called when this block is being orphaned. Use this to copy game-data
@@ -68,8 +68,8 @@ public abstract class IMultiblockPart extends TileEntity {
      *                          shedding orphans.
      * @see #onDetached(MultiblockControllerBase)
      */
-    public abstract void onOrphaned(MultiblockControllerBase oldController,
-                                    int oldControllerSize, int newControllerSize);
+    public abstract void onOrphaned(MultiblockControllerBase oldController, int oldControllerSize,
+        int newControllerSize);
 
     // Multiblock fuse/split helper methods. Here there be dragons.
 
@@ -78,7 +78,7 @@ public abstract class IMultiblockPart extends TileEntity {
      * not attach this tile entity to it. Override this in your game code!
      *
      * @return A new Multiblock Controller, derived from
-     * MultiblockControllerBase.
+     *         MultiblockControllerBase.
      */
     public abstract MultiblockControllerBase createNewMultiblock();
 
@@ -87,7 +87,7 @@ public abstract class IMultiblockPart extends TileEntity {
      * to ensure that incompatible multiblocks are not merged.
      *
      * @return The class/type of the multiblock controller which governs this
-     * type of part.
+     *         type of part.
      */
     public abstract Class<? extends MultiblockControllerBase> getMultiblockControllerType();
 
@@ -117,7 +117,7 @@ public abstract class IMultiblockPart extends TileEntity {
 
     /**
      * @return True if this block has been visited by your validation algorithms
-     * since the last reset.
+     *         since the last reset.
      */
     public abstract boolean isVisited();
 
@@ -149,7 +149,7 @@ public abstract class IMultiblockPart extends TileEntity {
      * client, because ChunkProviderClient is stupid.
      *
      * @return An array of references to neighboring IMultiblockPart tile
-     * entities.
+     *         entities.
      */
     public abstract IMultiblockPart[] getNeighboringParts();
 
@@ -164,8 +164,7 @@ public abstract class IMultiblockPart extends TileEntity {
      *
      * @param multiblockControllerBase The controller to which this part is being assembled.
      */
-    public abstract void onMachineAssembled(
-            MultiblockControllerBase multiblockControllerBase);
+    public abstract void onMachineAssembled(MultiblockControllerBase multiblockControllerBase);
 
     /**
      * Called when the machine is broken for game reasons, e.g. a player removed
@@ -194,9 +193,9 @@ public abstract class IMultiblockPart extends TileEntity {
      * controller that it is attaching at this time.
      *
      * @return A Set of multiblock controllers to which this object would like
-     * to attach. It should have attached to one of the controllers in
-     * this list. Return null if there are no compatible controllers
-     * nearby.
+     *         to attach. It should have attached to one of the controllers in
+     *         this list. Return null if there are no compatible controllers
+     *         nearby.
      */
     public abstract Set<MultiblockControllerBase> attachToNeighbors();
 
@@ -213,7 +212,7 @@ public abstract class IMultiblockPart extends TileEntity {
 
     /**
      * @return The part's saved multiblock game-data in NBT format, or null if
-     * there isn't any.
+     *         there isn't any.
      */
     public abstract NBTTagCompound getMultiblockSaveData();
 

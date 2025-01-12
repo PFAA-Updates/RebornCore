@@ -1,13 +1,13 @@
 package reborncore.common.multiblock.rectangular;
 
 import net.minecraftforge.common.util.ForgeDirection;
+
 import reborncore.common.multiblock.CoordTriplet;
 import reborncore.common.multiblock.MultiblockControllerBase;
 import reborncore.common.multiblock.MultiblockTileEntityBase;
 import reborncore.common.multiblock.MultiblockValidationException;
 
-public abstract class RectangularMultiblockTileEntityBase extends
-        MultiblockTileEntityBase {
+public abstract class RectangularMultiblockTileEntityBase extends MultiblockTileEntityBase {
 
     PartPosition position;
     ForgeDirection outwards;
@@ -32,8 +32,7 @@ public abstract class RectangularMultiblockTileEntityBase extends
     @Override
     public void onAttached(MultiblockControllerBase newController) {
         super.onAttached(newController);
-        recalculateOutwardsDirection(newController.getMinimumCoord(),
-                newController.getMaximumCoord());
+        recalculateOutwardsDirection(newController.getMinimumCoord(), newController.getMaximumCoord());
     }
 
     @Override
@@ -52,8 +51,7 @@ public abstract class RectangularMultiblockTileEntityBase extends
     }
 
     // Positional helpers
-    public void recalculateOutwardsDirection(CoordTriplet minCoord,
-                                             CoordTriplet maxCoord) {
+    public void recalculateOutwardsDirection(CoordTriplet minCoord, CoordTriplet maxCoord) {
         outwards = ForgeDirection.UNKNOWN;
         position = PartPosition.Unknown;
 
@@ -107,6 +105,5 @@ public abstract class RectangularMultiblockTileEntityBase extends
 
     public abstract void isGoodForBottom() throws MultiblockValidationException;
 
-    public abstract void isGoodForInterior()
-            throws MultiblockValidationException;
+    public abstract void isGoodForInterior() throws MultiblockValidationException;
 }

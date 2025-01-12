@@ -1,14 +1,33 @@
 package reborncore.jtraits;
 
-import com.google.common.collect.Maps;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.*;
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.FrameNode;
+import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.JumpInsnNode;
+import org.objectweb.asm.tree.LabelNode;
+import org.objectweb.asm.tree.LdcInsnNode;
+import org.objectweb.asm.tree.LineNumberNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.TypeInsnNode;
+import org.objectweb.asm.tree.VarInsnNode;
 
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.*;
+import com.google.common.collect.Maps;
 
 public class ASMUtils {
 
@@ -19,8 +38,7 @@ public class ASMUtils {
             f.setAccessible(true);
             try {
                 opcodes.put(f.getInt(null), f.getName());
-            } catch (Exception e) {
-            }
+            } catch (Exception e) {}
         }
     }
 
@@ -29,8 +47,8 @@ public class ASMUtils {
         return opcodes.get(opcode);
     }
 
-    public static int addInstructionsWithSuperRedirections(AbstractInsnNode node, List<AbstractInsnNode> added, int supercall,
-                                                           Mixin<?> mixin) {
+    public static int addInstructionsWithSuperRedirections(AbstractInsnNode node, List<AbstractInsnNode> added,
+        int supercall, Mixin<?> mixin) {
 
         if (node instanceof FieldInsnNode) {
             FieldInsnNode f = (FieldInsnNode) node;
@@ -40,22 +58,34 @@ public class ASMUtils {
                     return 1;
                 } else {
                     added.add(new FieldInsnNode(f.getOpcode(), mixin.getNewType(), f.name, f.desc));
-                    if (f.name.equals("_self"))
-                        return 3;
+                    if (f.name.equals("_self")) return 3;
                 }
             } else {
                 added.add(new FieldInsnNode(f.getOpcode(), f.owner, f.name, f.desc));
             }
         } else if (node instanceof MethodInsnNode) {
             MethodInsnNode m = (MethodInsnNode) node;
-            if (supercall == 1 && !(m.name.equals("<init>") || m.name.equals("<clinit>")) && matches(m.owner, mixin.getParents())) {
-                added.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, trackClosestImplementation(m.name, m.desc, mixin.getParentClass()),
-                        m.name, m.desc, false));
+            if (supercall == 1 && !(m.name.equals("<init>") || m.name.equals("<clinit>"))
+                && matches(m.owner, mixin.getParents())) {
+                added.add(
+                    new MethodInsnNode(
+                        Opcodes.INVOKESPECIAL,
+                        trackClosestImplementation(m.name, m.desc, mixin.getParentClass()),
+                        m.name,
+                        m.desc,
+                        false));
                 return 2;
-            } else if (supercall == 3 && !(m.name.equals("<init>") || m.name.equals("<clinit>")) && matches(m.owner, mixin.getParents())) {
-                added.add(new MethodInsnNode(m.itf ? Opcodes.INVOKEINTERFACE : Opcodes.INVOKESPECIAL, m.owner, m.name, m.desc, m.itf));
-                return 2;
-            }
+            } else if (supercall == 3 && !(m.name.equals("<init>") || m.name.equals("<clinit>"))
+                && matches(m.owner, mixin.getParents())) {
+                    added.add(
+                        new MethodInsnNode(
+                            m.itf ? Opcodes.INVOKEINTERFACE : Opcodes.INVOKESPECIAL,
+                            m.owner,
+                            m.name,
+                            m.desc,
+                            m.itf));
+                    return 2;
+                }
             if (matches(m.owner, mixin.getParents())) {
                 added.add(new MethodInsnNode(m.getOpcode(), mixin.getNewType(), m.name, m.desc, m.itf));
             } else {
@@ -99,10 +129,16 @@ public class ASMUtils {
             str += "CONSTANT: \"" + n.cst + "\"";
         } else if (node instanceof LabelNode) {
             LabelNode n = (LabelNode) node;
-            str += "LABEL: " + n.getLabel() + " - " + n.getLabel().hashCode();
+            str += "LABEL: " + n.getLabel()
+                + " - "
+                + n.getLabel()
+                    .hashCode();
         } else if (node instanceof JumpInsnNode) {
             JumpInsnNode n = (JumpInsnNode) node;
-            str += "JUMP: " + n.label.getLabel() + " - " + n.label.getLabel().hashCode();
+            str += "JUMP: " + n.label.getLabel()
+                + " - "
+                + n.label.getLabel()
+                    .hashCode();
         } else if (node instanceof LineNumberNode) {
             LineNumberNode n = (LineNumberNode) node;
             str += "LINE: " + n.line;
@@ -120,9 +156,7 @@ public class ASMUtils {
 
     public static boolean matches(String str, String... others) {
 
-        for (String s : others)
-            if (str.equals(s))
-                return true;
+        for (String s : others) if (str.equals(s)) return true;
         return false;
     }
 
@@ -130,8 +164,10 @@ public class ASMUtils {
 
         try {
             ClassNode cnode = new ClassNode();
-            ClassReader reader = new ClassReader(ClassLoadingHelper.instance.getResourceAsStream(clazz.getName().replace(".", "/")
-                    + ".class"));
+            ClassReader reader = new ClassReader(
+                ClassLoadingHelper.instance.getResourceAsStream(
+                    clazz.getName()
+                        .replace(".", "/") + ".class"));
             reader.accept(cnode, 0);
 
             return cnode;
@@ -151,16 +187,11 @@ public class ASMUtils {
 
     public static int getReturnCode(String type) {
 
-        if (type.equals("V"))
-            return Opcodes.RETURN;
-        if (type.equals("B") || type.equals("Z") || type.equals("S") || type.equals("I"))
-            return Opcodes.IRETURN;
-        else if (type.equals("L"))
-            return Opcodes.LRETURN;
-        else if (type.equals("F"))
-            return Opcodes.FRETURN;
-        else if (type.equals("D"))
-            return Opcodes.DRETURN;
+        if (type.equals("V")) return Opcodes.RETURN;
+        if (type.equals("B") || type.equals("Z") || type.equals("S") || type.equals("I")) return Opcodes.IRETURN;
+        else if (type.equals("L")) return Opcodes.LRETURN;
+        else if (type.equals("F")) return Opcodes.FRETURN;
+        else if (type.equals("D")) return Opcodes.DRETURN;
         return Opcodes.ARETURN;
 
     }
@@ -177,9 +208,10 @@ public class ASMUtils {
         set.add(mixin.getParentType());
         set.add(mixin.getTraitType());
         recursivelyFindClasses(set);
-        Mixin<?> next = ClassLoadingHelper.instance.findMixin(mixin.getParentType().replace("/", "."));
-        if (next != null)
-            recursivelyFindClasses(next, set);
+        Mixin<?> next = ClassLoadingHelper.instance.findMixin(
+            mixin.getParentType()
+                .replace("/", "."));
+        if (next != null) recursivelyFindClasses(next, set);
     }
 
     private static void recursivelyFindClasses(Set<String> set) {
@@ -189,22 +221,20 @@ public class ASMUtils {
             try {
                 Class<?> c = Class.forName(s.replace('/', '.'));
                 Class<?> sc = c.getSuperclass();
-                if (sc != null)
-                    set.add(sc.getName().replace('.', '/'));
-                for (Class<?> i : c.getInterfaces())
-                    set.add(i.getName().replace('.', '/'));
-            } catch (Exception ex) {
-            }
+                if (sc != null) set.add(
+                    sc.getName()
+                        .replace('.', '/'));
+                for (Class<?> i : c.getInterfaces()) set.add(
+                    i.getName()
+                        .replace('.', '/'));
+            } catch (Exception ex) {}
         }
-        if (oldAmt != set.size())
-            recursivelyFindClasses(set);
+        if (oldAmt != set.size()) recursivelyFindClasses(set);
     }
 
     public static MethodNode getMethod(String name, String desc, ClassNode clazz) {
 
-        for (MethodNode m : clazz.methods)
-            if (m.name.equals(name) && m.desc.equals(desc))
-                return m;
+        for (MethodNode m : clazz.methods) if (m.name.equals(name) && m.desc.equals(desc)) return m;
         return null;
     }
 
@@ -217,8 +247,7 @@ public class ASMUtils {
 
     public static void copyInsn(InsnList destList, AbstractInsnNode insn) {
 
-        if (insn == null)
-            return;
+        if (insn == null) return;
 
         copier.copyTo(insn, destList);
     }
@@ -229,18 +258,16 @@ public class ASMUtils {
 
         public NodeCopier(InsnList sourceList) {
 
-            for (AbstractInsnNode instruction = sourceList.getFirst(); instruction != null; instruction = instruction.getNext())
-                if (instruction instanceof LabelNode)
-                    labelMap.put(((LabelNode) instruction), new LabelNode());
+            for (AbstractInsnNode instruction = sourceList.getFirst(); instruction
+                != null; instruction = instruction.getNext())
+                if (instruction instanceof LabelNode) labelMap.put(((LabelNode) instruction), new LabelNode());
         }
 
         public void copyTo(AbstractInsnNode node, InsnList destination) {
 
-            if (node == null)
-                return;
+            if (node == null) return;
 
-            if (destination == null)
-                return;
+            if (destination == null) return;
 
             destination.add(node.clone(labelMap));
         }
@@ -248,12 +275,10 @@ public class ASMUtils {
 
     public static String trackClosestImplementation(String name, String desc, Class<?> clazz) {
 
-        if (clazz == Object.class)
-            return null;
+        if (clazz == Object.class) return null;
         ClassNode n = getClassNode(clazz);
         for (MethodNode m : n.methods)
-            if (m.name.equals(name) && m.desc.equals(desc))
-                return Type.getInternalName(clazz);
+            if (m.name.equals(name) && m.desc.equals(desc)) return Type.getInternalName(clazz);
         return trackClosestImplementation(name, desc, clazz.getSuperclass());
     }
 }

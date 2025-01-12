@@ -1,9 +1,9 @@
 package reborncore.common.multiblock;
 
-import net.minecraft.world.World;
-
 import java.util.HashMap;
 import java.util.Set;
+
+import net.minecraft.world.World;
 
 /**
  * This is a very static singleton registry class which directs incoming events
@@ -12,6 +12,7 @@ import java.util.Set;
  * @author Erogenous Beef
  */
 public class MultiblockRegistry {
+
     // World > WorldRegistry map
     private static HashMap<World, MultiblockWorldRegistry> registries = new HashMap<World, MultiblockWorldRegistry>();
 
@@ -37,7 +38,8 @@ public class MultiblockRegistry {
      */
     public static void onChunkLoaded(World world, int chunkX, int chunkZ) {
         if (registries.containsKey(world)) {
-            registries.get(world).onChunkLoaded(chunkX, chunkZ);
+            registries.get(world)
+                .onChunkLoaded(chunkX, chunkZ);
         }
     }
 
@@ -61,7 +63,8 @@ public class MultiblockRegistry {
      */
     public static void onPartRemovedFromWorld(World world, IMultiblockPart part) {
         if (registries.containsKey(world)) {
-            registries.get(world).onPartRemovedFromWorld(part);
+            registries.get(world)
+                .onPartRemovedFromWorld(part);
         }
 
     }
@@ -74,7 +77,8 @@ public class MultiblockRegistry {
      */
     public static void onWorldUnloaded(World world) {
         if (registries.containsKey(world)) {
-            registries.get(world).onWorldUnloaded();
+            registries.get(world)
+                .onWorldUnloaded();
             registries.remove(world);
         }
     }
@@ -86,13 +90,13 @@ public class MultiblockRegistry {
      * @param world      The world containing the multiblock
      * @param controller The dirty controller
      */
-    public static void addDirtyController(World world,
-                                          MultiblockControllerBase controller) {
+    public static void addDirtyController(World world, MultiblockControllerBase controller) {
         if (registries.containsKey(world)) {
-            registries.get(world).addDirtyController(controller);
+            registries.get(world)
+                .addDirtyController(controller);
         } else {
             throw new IllegalArgumentException(
-                    "Adding a dirty controller to a world that has no registered controllers!");
+                "Adding a dirty controller to a world that has no registered controllers!");
         }
     }
 
@@ -103,27 +107,27 @@ public class MultiblockRegistry {
      * @param world      The world formerly containing the multiblock
      * @param controller The dead controller
      */
-    public static void addDeadController(World world,
-                                         MultiblockControllerBase controller) {
+    public static void addDeadController(World world, MultiblockControllerBase controller) {
         if (registries.containsKey(world)) {
-            registries.get(world).addDeadController(controller);
+            registries.get(world)
+                .addDeadController(controller);
         } else {
-            BeefCoreLog
-                    .warning(
-                            "Controller %d in world %s marked as dead, but that world is not tracked! Controller is being ignored.",
-                            controller.hashCode(), world);
+            BeefCoreLog.warning(
+                "Controller %d in world %s marked as dead, but that world is not tracked! Controller is being ignored.",
+                controller.hashCode(),
+                world);
         }
     }
 
     /**
      * @param world The world whose controllers you wish to retrieve.
      * @return An unmodifiable set of controllers active in the given world, or
-     * null if there are none.
+     *         null if there are none.
      */
-    public static Set<MultiblockControllerBase> getControllersFromWorld(
-            World world) {
+    public static Set<MultiblockControllerBase> getControllersFromWorld(World world) {
         if (registries.containsKey(world)) {
-            return registries.get(world).getControllers();
+            return registries.get(world)
+                .getControllers();
         }
         return null;
     }
@@ -134,8 +138,7 @@ public class MultiblockRegistry {
         if (registries.containsKey(world)) {
             return registries.get(world);
         } else {
-            MultiblockWorldRegistry newRegistry = new MultiblockWorldRegistry(
-                    world);
+            MultiblockWorldRegistry newRegistry = new MultiblockWorldRegistry(world);
             registries.put(world, newRegistry);
             return newRegistry;
         }
