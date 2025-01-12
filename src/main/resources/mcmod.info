@@ -1,0 +1,21 @@
+[
+{
+  "modid": "${modId}",
+  "name": "${modName}",
+  "description": "RebornCore, A core set of classes.",
+  "version": "${modVersion}",
+  "mcversion": "${minecraftVersion}",
+  "url": "https://github.com/TechReborn/RebornCore",
+  "updateUrl": "",
+  "authorList": [
+    "modmuss50", "Gigabit101"
+  ],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [
+  ],
+  "parent":"",
+  "dependencies": [
+  ]
+}
+]
